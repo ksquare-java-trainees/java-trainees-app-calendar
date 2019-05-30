@@ -26,11 +26,13 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
+      <version>5.4.2.Final</version>
     </dependency>
     <!-- Hibernate-C3P0 Integration -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-c3p0</artifactId>
+      <version>5.4.2.Final</version>
     </dependency>
     <!-- c3p0 -->
     <dependency>
@@ -40,9 +42,9 @@
     </dependency>
     <!-- Mysql Connector -->
     <dependency>
-      <groupId>mysql</groupId>
-      <artifactId>mysql-connector-java</artifactId>
-      <version>8.0.16</version>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.5</version>
     </dependency>
     <!-- Jackson API for JSON -->
     <dependency>
