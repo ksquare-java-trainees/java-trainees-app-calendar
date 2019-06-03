@@ -14,13 +14,13 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-webmvc</artifactId>
-      <version>RELEASE</version>
+      <version>5.1.7.RELEASE</version>
     </dependency>
     <!-- Spring ORM -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>
-      <version>RELEASE</version>
+      <version>5.1.7.RELEASE</version>
     </dependency>
     <!-- Hibernate ORM -->
     <dependency>
@@ -56,7 +56,7 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>RELEASE</version>
+      <version>4.0.1</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

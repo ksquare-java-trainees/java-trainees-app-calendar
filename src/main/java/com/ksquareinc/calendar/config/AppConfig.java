@@ -15,7 +15,7 @@ import static org.hibernate.cfg.AvailableSettings.*;
 @PropertySource("classpath:db.properties")
 @EnableTransactionManagement
 @ComponentScans(value = { @ComponentScan("com.ksquareinc.calendar.dao"),
-        @ComponentScan("com.ksquareinc.calendar.service") })
+@ComponentScan("com.ksquareinc.calendar.service") })
 public class AppConfig {
 
     @Autowired
@@ -44,7 +44,7 @@ public class AppConfig {
         props.put(C3P0_MAX_STATEMENTS, env.getProperty("hibernate.c3p0.max_statements"));
 
         factoryBean.setHibernateProperties(props);
-        factoryBean.setPackagesToScan("com.boraji.tutorial.spring.model");
+        factoryBean.setPackagesToScan("com.ksquareinc.calendar.model");
 
         return factoryBean;
     }
