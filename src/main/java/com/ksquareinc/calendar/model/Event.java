@@ -18,9 +18,9 @@ public class Event {
 
     private boolean isAllDay;
 
-    private LocalDateTime begin;
+    private LocalDateTime dateBegin;
 
-    private LocalDateTime end;
+    private LocalDateTime dateEnd;
 
     private String Description;
 
@@ -68,19 +68,19 @@ public class Event {
     }
 
     public LocalDateTime getBegin() {
-        return begin;
+        return dateBegin;
     }
 
     public void setBegin(LocalDateTime begin) {
-        this.begin = begin;
+        this.dateBegin = begin;
     }
 
     public LocalDateTime getEnd() {
-        return end;
+        return dateEnd;
     }
 
     public void setEnd(LocalDateTime end) {
-        this.end = end;
+        this.dateEnd = end;
     }
 
     public String getDescription() {
