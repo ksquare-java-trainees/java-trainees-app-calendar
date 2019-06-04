@@ -2,7 +2,7 @@ package com.ksquareinc.calendar.model;
 
 import javax.persistence.*;
 
-@Entity(name = "users")
+@Entity(name = "Users")
 public class User {
 
     @Id

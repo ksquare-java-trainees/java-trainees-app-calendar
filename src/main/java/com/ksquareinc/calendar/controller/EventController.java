@@ -1,6 +1,7 @@
 package com.ksquareinc.calendar.controller;
 
 import com.ksquareinc.calendar.model.Event;
+import com.ksquareinc.calendar.model.User;
 import com.ksquareinc.calendar.service.EventService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,5 +32,11 @@ public class EventController {
         }
 
         return response;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Event> get(@PathVariable("id") long id) {
+        Event event = eventService.getEvent(id);
+        return ResponseEntity.ok().body(event);
     }
 }
