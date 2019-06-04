@@ -1,13 +1,12 @@
-package com.ksquareinc.calendar.service;
+package com.ksquareinc.calendar.dao;
 
 import com.ksquareinc.calendar.model.Event;
 
-public interface EventService {
+public interface EventDAO {
 
     void saveEvent(Event event);
 
     void deleteEvent(long evID);
 
     Event getEvent(long evID);
-
 }
