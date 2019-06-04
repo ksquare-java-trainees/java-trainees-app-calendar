@@ -9,11 +9,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     private Event eventCreated;
-
-    @ManyToOne
-    private Event eventInvitation;
 
     private Long ssoId = -1L;
 
@@ -61,11 +58,4 @@ public class User {
         this.eventCreated = eventCreated;
     }
 
-    public Event getEventInvitation() {
-        return eventInvitation;
-    }
-
-    public void setEventInvitation(Event eventInvitation) {
-        this.eventInvitation = eventInvitation;
-    }
 }

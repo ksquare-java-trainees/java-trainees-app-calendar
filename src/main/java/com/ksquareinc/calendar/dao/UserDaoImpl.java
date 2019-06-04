@@ -45,8 +45,6 @@ public class UserDaoImpl implements UserDao {
         Session session = sessionFactory.getCurrentSession();
         User user2 = session.byId(User.class).load(id);
         user2.setUsername(user.getUsername());
-        user2.setEventCreated(user.getEventCreated());
-        user2.setEventInvitation(user.getEventInvitation());
         user2.setSsoId(user.getSsoId());
         user2.setToken(user.getToken());
         session.flush();

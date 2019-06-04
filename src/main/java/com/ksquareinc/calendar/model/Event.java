@@ -11,7 +11,8 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
+    @OneToOne(mappedBy = "eventCreated", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, optional = false)
     private User creator;
 
     private String subject;
@@ -24,7 +25,10 @@ public class Event {
 
     private String Description;
 
-    @OneToMany
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
     private List<User> guests;
 
     public Long getId() {
