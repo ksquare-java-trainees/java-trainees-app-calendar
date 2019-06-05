@@ -2,6 +2,8 @@ package com.ksquareinc.calendar.dao;
 
 import com.ksquareinc.calendar.model.Event;
 
+import java.util.List;
+
 public interface EventDAO {
 
     void saveEvent(Event event);
@@ -9,4 +11,6 @@ public interface EventDAO {
     void deleteEvent(long evID);
 
     Event getEvent(long evID);
+
+    List<Event> list();
 }

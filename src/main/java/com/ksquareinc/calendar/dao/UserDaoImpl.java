@@ -13,7 +13,7 @@ import javax.persistence.criteria.Root;
 import java.util.List;
 
 @Repository
-public class UserDaoImpl implements UserDao {
+public class UserDaoImpl implements UserDao  {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -47,6 +47,8 @@ public class UserDaoImpl implements UserDao {
         user2.setUsername(user.getUsername());
         user2.setSsoId(user.getSsoId());
         user2.setToken(user.getToken());
+        user2.setEventsCreated(user.getEventsCreated());
+        user2.setEventInvitations(user.getEventInvitations());
         session.flush();
     }
 
@@ -57,4 +59,18 @@ public class UserDaoImpl implements UserDao {
         session.delete(user);
     }
 
+
+    @Override
+    public User getByUsername(String username) {
+        Session session = sessionFactory.getCurrentSession();
+        String qs = "from com.ksquareinc.calendar.model.User " +
+                "where com.ksquareinc.calendar.model.User.USER_USERNAME = :username";
+        Query<User> query = session.createQuery(qs);
+        query.setParameter("username", username);
+        List<?> list = query.list();
+        if (list.isEmpty()){
+            return null;
+        }
+        return (User) list.get(0);
+    }
 }

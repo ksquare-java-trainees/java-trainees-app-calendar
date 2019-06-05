@@ -1,8 +1,12 @@
 package com.ksquareinc.calendar.model;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Events")
 public class Event {
@@ -11,8 +15,8 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "eventCreated", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator_id", referencedColumnName = "id" ,nullable = false)
     private User creator;
 
     private String subject;
@@ -25,11 +29,14 @@ public class Event {
 
     private String Description;
 
-    @OneToMany(
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+    @ManyToMany(cascade = {
+            CascadeType.ALL
+    }, fetch=FetchType.EAGER)
+    @JoinTable(name = "event_guests",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> guests;
+    private List<User> guests  = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -93,5 +100,39 @@ public class Event {
 
     public void setDescription(String description) {
         Description = description;
+    }
+
+    @Override
+    public String toString() {
+        return "Event{" +
+                "id=" + id +
+                ", creator=" + creator.getUsername() +
+                ", subject='" + subject + '\'' +
+                ", isAllDay=" + isAllDay +
+                ", dateBegin=" + dateBegin +
+                ", dateEnd=" + dateEnd +
+                ", Description='" + Description + '\'' +
+                ", guests=" + guests.size() +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return isAllDay == event.isAllDay &&
+                Objects.equals(id, event.id) &&
+                Objects.equals(creator, event.creator) &&
+                Objects.equals(subject, event.subject) &&
+                Objects.equals(dateBegin, event.dateBegin) &&
+                Objects.equals(dateEnd, event.dateEnd) &&
+                Objects.equals(Description, event.Description) &&
+                Objects.equals(guests, event.guests);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, creator, subject, isAllDay, dateBegin, dateEnd, Description, guests);
     }
 }

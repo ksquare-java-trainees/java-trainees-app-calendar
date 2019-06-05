@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/event")
 public class EventController {
@@ -17,9 +19,10 @@ public class EventController {
 
     //Insert into blabla
     @PostMapping("/newEvent")
-    public ResponseEntity<Void> saveEvent(@RequestBody Event event){
+    public ResponseEntity<?> saveEvent(@RequestBody Event event){
         eventService.saveEvent(event);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+
+        return ResponseEntity.ok().body("New Event has been saved with ID:" + event.toString());
     }
 
     @DeleteMapping("/{eventID}")
@@ -39,4 +42,11 @@ public class EventController {
         Event event = eventService.getEvent(id);
         return ResponseEntity.ok().body(event);
     }
+
+    @GetMapping
+    public ResponseEntity<List<Event>> list() {
+        List<Event> Events = eventService.list();
+        return ResponseEntity.ok().body(Events);
+    }
+
 }
