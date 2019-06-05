@@ -64,7 +64,7 @@ public class UserDaoImpl implements UserDao  {
     public User getByUsername(String username) {
         Session session = sessionFactory.getCurrentSession();
         String qs = "from com.ksquareinc.calendar.model.User " +
-                "where com.ksquareinc.calendar.model.User.USER_USERNAME = :username";
+                "where "+ User.USER_USERNAME + " = :username";
         Query<User> query = session.createQuery(qs);
         query.setParameter("username", username);
         List<?> list = query.list();

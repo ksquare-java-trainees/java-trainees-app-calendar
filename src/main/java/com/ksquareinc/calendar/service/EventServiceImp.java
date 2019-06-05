@@ -51,6 +51,7 @@ public class EventServiceImp implements EventService {
             event.setCreator(databaseUser);
         }
     }
+
     private void checkGuestsExist(Event event){
        List<User> guests =  event.getGuests();
        for (int i = 0; i < guests.size(); i++){
