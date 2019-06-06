@@ -27,7 +27,7 @@ public class Event {
 
     private LocalDateTime dateEnd;
 
-    private String Description;
+    private String description;
 
     @ManyToMany(cascade = {
             CascadeType.ALL
@@ -70,36 +70,36 @@ public class Event {
         this.subject = subject;
     }
 
-    public boolean isAllDay() {
+    public boolean getIsAllDay() {
         return isAllDay;
     }
 
-    public void setAllDay(boolean allDay) {
-        isAllDay = allDay;
+    public void setIsAllDay(boolean isAllDay) {
+        this.isAllDay = isAllDay;
     }
 
-    public LocalDateTime getBegin() {
+    public LocalDateTime getDateBegin() {
         return dateBegin;
     }
 
-    public void setBegin(LocalDateTime begin) {
-        this.dateBegin = begin;
+    public void setDateBegin(LocalDateTime dateBegin) {
+        this.dateBegin = dateBegin;
     }
 
-    public LocalDateTime getEnd() {
+    public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
-    public void setEnd(LocalDateTime end) {
-        this.dateEnd = end;
+    public void setDateEnd(LocalDateTime dateEnd) {
+        this.dateEnd = dateEnd;
     }
 
     public String getDescription() {
-        return Description;
+        return description;
     }
 
     public void setDescription(String description) {
-        Description = description;
+        this.description = description;
     }
 
     @Override
@@ -111,7 +111,7 @@ public class Event {
                 ", isAllDay=" + isAllDay +
                 ", dateBegin=" + dateBegin +
                 ", dateEnd=" + dateEnd +
-                ", Description='" + Description + '\'' +
+                ", description='" + description + '\'' +
                 ", guests=" + guests.size() +
                 '}';
     }
@@ -127,12 +127,12 @@ public class Event {
                 Objects.equals(subject, event.subject) &&
                 Objects.equals(dateBegin, event.dateBegin) &&
                 Objects.equals(dateEnd, event.dateEnd) &&
-                Objects.equals(Description, event.Description) &&
+                Objects.equals(description, event.description) &&
                 Objects.equals(guests, event.guests);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, creator, subject, isAllDay, dateBegin, dateEnd, Description, guests);
+        return Objects.hash(id, creator, subject, isAllDay, dateBegin, dateEnd, description, guests);
     }
 }
