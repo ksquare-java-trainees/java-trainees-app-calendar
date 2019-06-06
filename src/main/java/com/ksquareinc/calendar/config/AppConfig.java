@@ -26,10 +26,10 @@ public class AppConfig {
 
         Properties props = new Properties();
         // Setting JDBC properties
-        props.put(DRIVER, env.getProperty("mysql.driver"));
-        props.put(URL, env.getProperty("mysql.url"));
-        props.put(USER, env.getProperty("mysql.user"));
-        props.put(PASS, env.getProperty("mysql.password"));
+        props.put(DRIVER, env.getProperty("postgresql.driver"));
+        props.put(URL, env.getProperty("postgresql.url"));
+        props.put(USER, env.getProperty("postgresql.user"));
+        props.put(PASS, env.getProperty("postgresql.password"));
 
         // Setting Hibernate properties
         props.put(SHOW_SQL, env.getProperty("hibernate.show_sql"));
@@ -38,8 +38,7 @@ public class AppConfig {
         // Setting C3P0 properties
         props.put(C3P0_MIN_SIZE, env.getProperty("hibernate.c3p0.min_size"));
         props.put(C3P0_MAX_SIZE, env.getProperty("hibernate.c3p0.max_size"));
-        props.put(C3P0_ACQUIRE_INCREMENT,
-                env.getProperty("hibernate.c3p0.acquire_increment"));
+        props.put(C3P0_ACQUIRE_INCREMENT, env.getProperty("hibernate.c3p0.acquire_increment"));
         props.put(C3P0_TIMEOUT, env.getProperty("hibernate.c3p0.timeout"));
         props.put(C3P0_MAX_STATEMENTS, env.getProperty("hibernate.c3p0.max_statements"));
 
