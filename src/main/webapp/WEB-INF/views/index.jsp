@@ -24,7 +24,10 @@
 
 <!-- Header -->
 <header id="header" class="alt">
-  <div class="logo"><a href="index.html">Event Calendar API <span>by Ksquare Java Trainees</span></a></div>
+  <div class="logo">
+
+    <a href=""><img src="favicon.ico" height="24" width="24"  > Event Calendar API <span>by Ksquare Java Trainees'</span></a>
+    </div>
   <a href="#menu">Menu</a>
 </header>
 
@@ -32,7 +35,7 @@
 <nav id="menu">
   <ul class="links">
     <li><a href="">Home</a></li>
-    <li><a href="docs">Swagger</a></li>
+    <li><a href="swagger-ui.html">Swagger</a></li>
   </ul>
 </nav>
 
@@ -42,7 +45,7 @@
     <img src="images/slide01.jpg" alt="" />
     <div class="inner">
       <header>
-        <p>Welcome to Java Trainees</p>
+        <p>Welcome to Java Trainees'</p>
         <h2>Event Calendar API</h2>
       </header>
     </div>
