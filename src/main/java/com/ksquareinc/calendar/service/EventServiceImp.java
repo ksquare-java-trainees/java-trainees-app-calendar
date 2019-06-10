@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -61,5 +62,31 @@ public class EventServiceImp implements EventService {
            }
        }
        event.setGuests(guests);
+    }
+
+    @Override
+    public List<Event> getByDay(LocalDateTime localDateTime) {
+        return eventDAO.getByDay(localDateTime);
+    }
+
+
+    @Override
+    public List<Event> getByWeek(LocalDateTime localDateTime) {
+        return eventDAO.getByWeek(localDateTime);
+    }
+
+    @Override
+    public List<Event> getByWeek(int weekNumber, int year) {
+        return eventDAO.getByWeek(weekNumber,year);
+    }
+
+    @Override
+    public List<Event> getByMonth(LocalDateTime localDateTime) {
+        return eventDAO.getByMonth(localDateTime);
+    }
+
+    @Override
+    public List<Event> getByMonth(int monthNumber, int year) {
+        return eventDAO.getByMonth(monthNumber, year);
     }
 }
