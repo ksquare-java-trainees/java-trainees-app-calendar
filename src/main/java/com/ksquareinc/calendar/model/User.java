@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "Users")
 @Transactional
-public class User {
+public class User implements Serializable {
 
     public static final String USER_USERNAME = "username";
 
@@ -19,7 +20,7 @@ public class User {
     private Long id;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator", cascade = CascadeType.ALL)
     private List<Event> eventsCreated;
 
     @JsonIgnore

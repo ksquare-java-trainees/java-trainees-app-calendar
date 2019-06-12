@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -16,33 +17,50 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class EventDAOImp implements EventDAO{
+public class EventDaoImpl implements EventDao {
 
     @Autowired
     private SessionFactory sessionFactory;
 
 
     @Override
-    public void saveEvent(Event event) {
+    public Event create(Event event) {
         Session session = sessionFactory.getCurrentSession();
-        session.saveOrUpdate(event);
+        session.save(event);
+        return event;
     }
 
     @Override
-    public void deleteEvent(long evID) {
+    @Transactional
+    public void delete(Event event) {
         Session session = sessionFactory.getCurrentSession();
-        Event ev = session.byId(Event.class).load(evID);
-        session.delete(ev);
+        session.delete(event);
     }
 
     @Override
-    public Event getEvent(long evID) {
+    @Transactional
+    public void deleteById(long id) {
         Session session = sessionFactory.getCurrentSession();
-        return session.get(Event.class, evID);
+        Event event = findOne(id);
+        session.delete(event);
     }
 
     @Override
-    public List<Event> list() {
+    @Transactional
+    public Event update(Event event){
+        Session session = sessionFactory.getCurrentSession();
+        session.merge(event);
+        return event;
+    }
+
+    @Override
+    public Event findOne(long id) {
+        Session session = sessionFactory.getCurrentSession();
+        return session.get(Event.class, id);
+    }
+
+    @Override
+    public List<Event> findAll() {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
@@ -50,12 +68,11 @@ public class EventDAOImp implements EventDAO{
         cq.select(root);
         Query<Event> query = session.createQuery(cq);
         return query.getResultList();
-
     }
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<Event> getByDay(LocalDateTime localDateTime) {
+    public List<Event> findAllByDay(LocalDateTime localDateTime) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
@@ -70,7 +87,7 @@ public class EventDAOImp implements EventDAO{
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<Event> getByWeek(LocalDateTime localDateTime) {
+    public List<Event> findAllByWeek(LocalDateTime localDateTime) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
@@ -86,7 +103,7 @@ public class EventDAOImp implements EventDAO{
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<Event> getByWeek(int weekNumber, int year) {
+    public List<Event> findAllByWeek(int weekNumber, int year) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
@@ -102,7 +119,7 @@ public class EventDAOImp implements EventDAO{
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<Event> getByMonth(LocalDateTime localDateTime) {
+    public List<Event> findAllByMonth(LocalDateTime localDateTime) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
@@ -118,7 +135,7 @@ public class EventDAOImp implements EventDAO{
 
     @Override
     @SuppressWarnings("Duplicates")
-    public List<Event> getByMonth(int monthNumber, int year) {
+    public List<Event> findAllByMonth(int monthNumber, int year) {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);

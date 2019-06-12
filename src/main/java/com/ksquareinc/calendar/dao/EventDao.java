@@ -1,11 +1,11 @@
-package com.ksquareinc.calendar.service;
+package com.ksquareinc.calendar.dao;
 
 import com.ksquareinc.calendar.model.Event;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface EventService extends GenericService<Event>{
+public interface EventDao extends GenericDao<Event> {
 
     List<Event> findAllByDay(LocalDateTime localDateTime);
 
@@ -16,7 +16,4 @@ public interface EventService extends GenericService<Event>{
     List<Event> findAllByMonth(LocalDateTime localDateTime);
 
     List<Event> findAllByMonth(int monthNumber, int year);
-
-    boolean isValid(long eventId);
-
 }
