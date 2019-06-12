@@ -60,7 +60,7 @@ public class EventDAOImp implements EventDAO{
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
         Root<Event> root = cq.from(Event.class);
-        LocalDateTime periodStart = localDateTime.with(LocalTime.of(0,0, 0,0));
+        LocalDateTime periodStart = localDateTime.with(LocalTime.MIDNIGHT);
         LocalDateTime periodEnd = periodStart.plusDays(1);
         periodEnd = periodEnd.plusSeconds(-1);
         cq.select(root).where(cb.between(root.get("dateBegin"), periodStart, periodEnd));
@@ -75,7 +75,7 @@ public class EventDAOImp implements EventDAO{
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
         Root<Event> root = cq.from(Event.class);
-        LocalDateTime periodStart = localDateTime.with(LocalTime.of(0,0, 0,0));
+        LocalDateTime periodStart = localDateTime.with(LocalTime.MIDNIGHT);
         periodStart = periodStart.with(DayOfWeek.MONDAY);
         LocalDateTime periodEnd = periodStart.plusWeeks(1);
         periodEnd = periodEnd.plusSeconds(-1);
@@ -107,7 +107,7 @@ public class EventDAOImp implements EventDAO{
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<Event> cq = cb.createQuery(Event.class);
         Root<Event> root = cq.from(Event.class);
-        LocalDateTime periodStart = localDateTime.with(LocalTime.of(0,0, 0,0));
+        LocalDateTime periodStart = localDateTime.with(LocalTime.MIDNIGHT);
         periodStart = periodStart.withDayOfMonth(1);
         LocalDateTime periodEnd = periodStart.plusMonths(1);
         periodEnd = periodEnd.plusSeconds(-1);

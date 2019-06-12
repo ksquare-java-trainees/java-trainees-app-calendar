@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+
+import static java.time.LocalTime.MIDNIGHT;
 
 @Service
 @Transactional(readOnly = true)
@@ -77,7 +80,7 @@ public class EventServiceImp implements EventService {
 
     @Override
     public List<Event> getByWeek(int weekNumber, int year) {
-        return eventDAO.getByWeek(weekNumber,year);
+        return eventDAO.getByWeek(weekNumber, year);
     }
 
     @Override
@@ -89,4 +92,23 @@ public class EventServiceImp implements EventService {
     public List<Event> getByMonth(int monthNumber, int year) {
         return eventDAO.getByMonth(monthNumber, year);
     }
+
+    @Override
+    public boolean isValid(long eventId) {
+        Event testEvent = eventDAO.getEvent(eventId);
+        if (testEvent == null){
+            return false;
+        }else if (testEvent.getDateEnd() != null &&
+                !testEvent.getIsAllDay()
+                && testEvent.getDateEnd().isBefore(LocalDateTime.now())){
+            return false;
+        }else if (testEvent.getIsAllDay()){
+            LocalDateTime nextDay = testEvent.getDateBegin().plusDays(1);
+            nextDay = nextDay.with(MIDNIGHT);
+            boolean isOver = LocalDateTime.now().isAfter(nextDay);
+            return !isOver;
+        }
+        return true;
+    }
+
 }

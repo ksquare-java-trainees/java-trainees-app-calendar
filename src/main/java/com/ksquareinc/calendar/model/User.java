@@ -19,11 +19,11 @@ public class User {
     private Long id;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     private List<Event> eventsCreated;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "guests")
+    @ManyToMany(mappedBy = "guests", cascade = CascadeType.ALL)
     private List<Event> eventInvitations  = new ArrayList<>();
 
     private Long ssoId = -1L;

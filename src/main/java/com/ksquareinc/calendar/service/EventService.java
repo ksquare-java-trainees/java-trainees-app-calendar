@@ -25,6 +25,6 @@ public interface EventService {
 
     List<Event> getByMonth(int monthNumber, int year);
 
-
+    boolean isValid(long eventId);
 
 }
