@@ -34,6 +34,7 @@ public class AppConfig {
         return factoryBean;
     }
 
+    @Bean
     private DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driver"));
@@ -44,6 +45,7 @@ public class AppConfig {
         return dataSource;
     }
 
+    @Bean
     private Properties hibernateProperties() {
         Properties props = new Properties();
         // Setting Hibernate properties

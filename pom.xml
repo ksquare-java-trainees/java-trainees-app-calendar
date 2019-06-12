@@ -99,10 +99,10 @@
           <url>http://localhost:8080/manager/text</url>
           <path>/ksquarecalendar</path>
           <update>true</update>
-          <!--<username>tomcat</username>
-          <password>tomcat</password>-->
-          <username>ksquare</username>
-          <password>ksquare</password>
+          <username>tomcat</username>
+          <password>tomcat</password>
+          <!--<username>ksquare</username>
+          <password>ksquare</password>-->
         </configuration>
       </plugin>
     </plugins>
