@@ -1,11 +1,20 @@
 package com.ksquareinc.calendar.service;
 
 import com.ksquareinc.calendar.model.Event;
+import com.ksquareinc.calendar.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EventService extends GenericService<Event>{
+
+    List<Event> findAllByCreator(Long creatorId);
+
+    List<Event> findAllByCreator(User creator);
+
+    List<Event> findAllByGuest(Long guestId);
+
+    List<Event> findAllByGuest(User guest);
 
     List<Event> findAllByDay(LocalDateTime localDateTime);
 

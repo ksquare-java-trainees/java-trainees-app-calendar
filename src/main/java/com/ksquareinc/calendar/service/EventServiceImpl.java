@@ -82,6 +82,30 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    @Transactional
+    public List<Event> findAllByCreator(Long creatorId) {
+        return userService.findOneWithCreations(creatorId).getEventsCreated();
+    }
+
+    @Override
+    @Transactional
+    public List<Event> findAllByCreator(User creator) {
+        return userService.findOneWithCreations(creator.getId()).getEventsCreated();
+    }
+
+    @Override
+    @Transactional
+    public List<Event> findAllByGuest(Long guestId) {
+        return userService.findOneWithInvitations(guestId).getEventInvitations();
+    }
+
+    @Override
+    @Transactional
+    public List<Event> findAllByGuest(User guest) {
+        return userService.findOneWithInvitations(guest.getId()).getEventInvitations();
+    }
+
+    @Override
     public List<Event> findAllByDay(LocalDateTime localDateTime) {
         return eventDAO.findAllByDay(localDateTime);
     }

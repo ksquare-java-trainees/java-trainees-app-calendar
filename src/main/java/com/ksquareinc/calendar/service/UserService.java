@@ -5,5 +5,10 @@ import com.ksquareinc.calendar.model.User;
 import java.util.List;
 
 public interface UserService extends GenericService<User>{
+
+    User findOneWithInvitations(long id);
+
+    User findOneWithCreations(long id);
+
     User getByUsername(String username);
 }
