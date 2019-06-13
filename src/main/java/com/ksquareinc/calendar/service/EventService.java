@@ -10,11 +10,11 @@ public interface EventService extends GenericService<Event>{
 
     List<Event> findAllByCreator(Long creatorId);
 
-    List<Event> findAllByCreator(User creator);
+    List<Event> findAllByCreator(String username);
 
     List<Event> findAllByGuest(Long guestId);
 
-    List<Event> findAllByGuest(User guest);
+    List<Event> findAllByGuest(String username);
 
     List<Event> findAllByDay(LocalDateTime localDateTime);
 

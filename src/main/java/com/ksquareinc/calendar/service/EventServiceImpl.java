@@ -60,7 +60,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkCreatorExist(Event event){
-        User databaseUser = userService.getByUsername(event.getCreator().getUsername());
+        User databaseUser = userService.findByUsername(event.getCreator().getUsername());
         if (databaseUser != null){
             event.setCreator(databaseUser);
         }else{
@@ -71,7 +71,7 @@ public class EventServiceImpl implements EventService {
     private void checkGuestsExist(Event event){
        List<User> guests =  event.getGuests();
        for (int i = 0; i < guests.size(); i++){
-           User databaseUser = userService.getByUsername(guests.get(i).getUsername());
+           User databaseUser = userService.findByUsername(guests.get(i).getUsername());
            if (databaseUser != null){
                guests.set(i, databaseUser);
            }else{
@@ -89,7 +89,8 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public List<Event> findAllByCreator(User creator) {
+    public List<Event> findAllByCreator(String username) {
+        User creator = userService.findByUsername(username);
         return userService.findOneWithCreations(creator.getId()).getEventsCreated();
     }
 
@@ -101,8 +102,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public List<Event> findAllByGuest(User guest) {
-        return userService.findOneWithInvitations(guest.getId()).getEventInvitations();
+    public List<Event> findAllByGuest(String username) {
+        User creator = userService.findByUsername(username);
+        return userService.findOneWithInvitations(creator.getId()).getEventInvitations();
     }
 
     @Override

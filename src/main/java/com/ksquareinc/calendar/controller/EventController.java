@@ -57,27 +57,27 @@ public class EventController {
         return ResponseEntity.ok().body("Event has been deleted successfully.");
     }
 
-    @GetMapping("/byCreator/{creatorId}")
-    public ResponseEntity<List<Event>> findByCreator(@PathVariable("creatorId") long creatorId){
+    @GetMapping("/byCreator/{id}")
+    public ResponseEntity<List<Event>> findByCreator(@PathVariable("id") long creatorId){
         List<Event> allByCreator = eventService.findAllByCreator(creatorId);
         return ResponseEntity.ok().body(allByCreator);
     }
 
-    @GetMapping("/byCreator")
-    public ResponseEntity<List<Event>> findByCreator(@RequestParam("creator") User creator){
-        List<Event> allByCreator = eventService.findAllByCreator(creator);
+    @GetMapping("/byCreator/{username}")
+    public ResponseEntity<List<Event>> findByCreator(@PathVariable("username") String username){
+        List<Event> allByCreator = eventService.findAllByCreator(username);
         return ResponseEntity.ok().body(allByCreator);
     }
 
-    @GetMapping("/byGuest/{guestId}")
-    public ResponseEntity<List<Event>> findByGuest(@PathVariable("guestId") long guestId){
+    @GetMapping("/byGuest/{id}")
+    public ResponseEntity<List<Event>> findByGuest(@PathVariable("id") long guestId){
         List<Event> allByGuest = eventService.findAllByGuest(guestId);
         return ResponseEntity.ok().body(allByGuest);
     }
 
-    @GetMapping("/byGuest")
-    public ResponseEntity<List<Event>> findByGuest(@RequestParam("guest") User guest){
-        List<Event> allByGuest = eventService.findAllByGuest(guest);
+    @GetMapping("/byGuest/{username}")
+    public ResponseEntity<List<Event>> findByGuest(@PathVariable("username") String username){
+        List<Event> allByGuest = eventService.findAllByGuest(username);
         return ResponseEntity.ok().body(allByGuest);
     }
 

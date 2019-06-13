@@ -10,5 +10,5 @@ public interface UserService extends GenericService<User>{
 
     User findOneWithCreations(long id);
 
-    User getByUsername(String username);
+    User findByUsername(String username);
 }
