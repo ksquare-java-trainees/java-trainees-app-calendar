@@ -63,8 +63,8 @@ public class EventController {
         return ResponseEntity.ok().body(allByCreator);
     }
 
-    @GetMapping("/byCreator/{username}")
-    public ResponseEntity<List<Event>> findByCreator(@PathVariable("username") String username){
+    @GetMapping("/byCreator")
+    public ResponseEntity<List<Event>> findByCreator(@RequestParam("username") String username){
         List<Event> allByCreator = eventService.findAllByCreator(username);
         return ResponseEntity.ok().body(allByCreator);
     }
@@ -75,8 +75,8 @@ public class EventController {
         return ResponseEntity.ok().body(allByGuest);
     }
 
-    @GetMapping("/byGuest/{username}")
-    public ResponseEntity<List<Event>> findByGuest(@PathVariable("username") String username){
+    @GetMapping("/byGuest")
+    public ResponseEntity<List<Event>> findByGuest(@RequestParam("username") String username){
         List<Event> allByGuest = eventService.findAllByGuest(username);
         return ResponseEntity.ok().body(allByGuest);
     }

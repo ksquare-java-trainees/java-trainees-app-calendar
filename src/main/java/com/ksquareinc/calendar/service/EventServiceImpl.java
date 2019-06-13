@@ -14,7 +14,7 @@ import java.util.List;
 import static java.time.LocalTime.MIDNIGHT;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class EventServiceImpl implements EventService {
 
     @Autowired
@@ -24,7 +24,6 @@ public class EventServiceImpl implements EventService {
     private UserService userService;
 
     @Override
-    @Transactional
     public Event save(Event event) {
         checkCreatorExist(event);
         checkGuestsExist(event);
@@ -32,24 +31,20 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
     public void deleteById(long id) {
         eventDAO.deleteById(id);
     }
 
-    @Override
     @Transactional
     public void delete(Event event) {
         eventDAO.delete(event);
     }
     @Override
-    @Transactional
     public Event update(Event event){
         return eventDAO.update(event);
     }
 
     @Override
-    @Transactional
     public Event findOne(long id) {
         return eventDAO.findOne(id);
     }
@@ -82,26 +77,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
     public List<Event> findAllByCreator(Long creatorId) {
         return userService.findOneWithCreations(creatorId).getEventsCreated();
     }
 
     @Override
-    @Transactional
     public List<Event> findAllByCreator(String username) {
         User creator = userService.findByUsername(username);
         return userService.findOneWithCreations(creator.getId()).getEventsCreated();
     }
 
     @Override
-    @Transactional
     public List<Event> findAllByGuest(Long guestId) {
         return userService.findOneWithInvitations(guestId).getEventInvitations();
     }
 
     @Override
-    @Transactional
     public List<Event> findAllByGuest(String username) {
         User creator = userService.findByUsername(username);
         return userService.findOneWithInvitations(creator.getId()).getEventInvitations();
