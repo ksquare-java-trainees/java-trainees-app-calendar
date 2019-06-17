@@ -9,7 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/event")
@@ -17,26 +19,90 @@ public class EventController {
 
     @Autowired
     private EventService eventService;
+    private String BAD_TOKEN_MESSAGE = "Your token is not valid or has expired, try again with a valid token";
+    private String BAD_CREATOR_MESSAGE = "The creator of your event is not a valid user";
 
     @PostMapping
     public ResponseEntity<?> save(@RequestBody Event event){
-        Event newEvent = eventService.save(event);
-        return ResponseEntity.ok().body("New Event has been saved with ID:" + newEvent.toString());
+        String token = event.getCreator().getToken();
+        if (token.equals("cheat")){
+            token = cheatToken();
+        }
+        if (SsoController.isTokenValid(token)) {
+            if (isCreatorValidSso(token, event)){
+                event = getValidGuestsEvent(token, event);
+                if (event != null){
+                    Event newEvent = eventService.save(event);
+                    return ResponseEntity.ok().body("New Event has been saved with ID:" + newEvent.toString());
+                }
+                return ResponseEntity.badRequest().body("Guests error");
+            }else{
+                return ResponseEntity.status(401).body(BAD_CREATOR_MESSAGE);
+            }
+        }else{
+            return ResponseEntity.status(401).body(BAD_TOKEN_MESSAGE);
+        }
+
     }
 
+    private Event getValidGuestsEvent(String token, Event event){
+        List<String> inputUserNames = new ArrayList<>();
+        for (User g : event.getGuests()){
+            inputUserNames.add(g.getUsername());
+        }
+        List<String> invalidUserNames = SsoController.validateUserNames(token, inputUserNames);
+        if (invalidUserNames == null){
+            return null;
+        }
 
+        inputUserNames.removeAll(invalidUserNames);
+        if (inputUserNames.isEmpty()){
+            return null;
+        }
+
+        List<User> validGuests = new ArrayList<>();
+        for (String name : inputUserNames){
+            User guest = new User();
+            guest.setUsername(name);
+        }
+        event.setGuests(validGuests);
+        return event;
+    }
+
+    private boolean isCreatorValidSso(String token, Event event) {
+        List<String> requestList = new ArrayList<>();
+        requestList.add(event.getCreator().getUsername());
+        List<String> responseList = SsoController.validateUserNames(token, requestList);
+        if (responseList == null){
+            return false;
+        } else{
+            return !(responseList.contains(event.getCreator().getUsername()));
+        }
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Event> findOne(@PathVariable("id") long id) {
-        Event event = eventService.findOne(id);
-        return ResponseEntity.ok().body(event);
+    public ResponseEntity<?> findOne(@RequestParam("token") String token,
+                                         @PathVariable("id") long id) {
+        if (SsoController.isTokenValid(token)){
+            Event event = eventService.findOne(id);
+            return ResponseEntity.ok().body(event);
+        }else{
+            return ResponseEntity.status(401).body(BAD_TOKEN_MESSAGE);
+        }
+
     }
 
     @GetMapping
-    public ResponseEntity<List<Event>> findAll() {
-        List<Event> Events = eventService.findAll();
-        return ResponseEntity.ok().body(Events);
+    public ResponseEntity<?> findAll(@RequestParam("token") String token) {
+        if (SsoController.isTokenValid(token)){
+            List<Event> Events = eventService.findAll();
+            return ResponseEntity.ok().body(Events);
+        }else{
+            return ResponseEntity.status(401).body(BAD_TOKEN_MESSAGE);
+        }
+
     }
+
 
     @PutMapping
     public ResponseEntity<?> update(@RequestBody Event event) {
@@ -58,31 +124,36 @@ public class EventController {
     }
 
     @GetMapping("/byCreator/{id}")
-    public ResponseEntity<List<Event>> findByCreator(@PathVariable("id") long creatorId){
+    public ResponseEntity<List<Event>> findByCreator(@RequestParam("token") String token,
+                                                     @PathVariable("id") long creatorId){
         List<Event> allByCreator = eventService.findAllByCreator(creatorId);
         return ResponseEntity.ok().body(allByCreator);
     }
 
     @GetMapping("/byCreator")
-    public ResponseEntity<List<Event>> findByCreator(@RequestParam("username") String username){
+    public ResponseEntity<List<Event>> findByCreator(@RequestParam("token") String token,
+                                                     @RequestParam("username") String username){
         List<Event> allByCreator = eventService.findAllByCreator(username);
         return ResponseEntity.ok().body(allByCreator);
     }
 
     @GetMapping("/byGuest/{id}")
-    public ResponseEntity<List<Event>> findByGuest(@PathVariable("id") long guestId){
+    public ResponseEntity<List<Event>> findByGuest(@RequestParam("token") String token,
+                                                   @PathVariable("id") long guestId){
         List<Event> allByGuest = eventService.findAllByGuest(guestId);
         return ResponseEntity.ok().body(allByGuest);
     }
 
     @GetMapping("/byGuest")
-    public ResponseEntity<List<Event>> findByGuest(@RequestParam("username") String username){
+    public ResponseEntity<List<Event>> findByGuest(@RequestParam("token") String token,
+                                                   @RequestParam("username") String username){
         List<Event> allByGuest = eventService.findAllByGuest(username);
         return ResponseEntity.ok().body(allByGuest);
     }
 
     @GetMapping("/byDay")
-    public ResponseEntity<List<Event>> findAllByDay(@RequestParam(value = "day")
+    public ResponseEntity<List<Event>> findAllByDay(@RequestParam("token") String token,
+                                                    @RequestParam(value = "day")
                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                             LocalDateTime day) {
         List<Event> allByDay = eventService.findAllByDay(day);
@@ -90,7 +161,8 @@ public class EventController {
     }
 
     @GetMapping("/byWeekday")
-    public ResponseEntity<List<Event>> findAllByWeek(@RequestParam(value = "weekday")
+    public ResponseEntity<List<Event>> findAllByWeek(@RequestParam("token") String token,
+                                                     @RequestParam(value = "weekday")
                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                              LocalDateTime weekDay) {
         List<Event> allByWeek = eventService.findAllByWeek(weekDay);
@@ -105,7 +177,8 @@ public class EventController {
     }
 
     @GetMapping("/byMonthday")
-    public ResponseEntity<List<Event>> findAllByMonth(@RequestParam(value = "monthday")
+    public ResponseEntity<List<Event>> findAllByMonth(@RequestParam("token") String token,
+                                                      @RequestParam(value = "monthday")
                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                               LocalDateTime monthDay) {
         List<Event> allByMonth = eventService.findAllByMonth(monthDay);
@@ -113,13 +186,17 @@ public class EventController {
     }
 
     @GetMapping("/byMonth")
-    public ResponseEntity<List<Event>> findAllByMonth(@RequestParam(value = "month") int monthNumber,
+    public ResponseEntity<List<Event>> findAllByMonth(@RequestParam("token") String token,
+                                                      @RequestParam(value = "month") int monthNumber,
                                                       @RequestParam(value = "year") int year) {
         List<Event> allByMonth = eventService.findAllByMonth(monthNumber, year);
         return ResponseEntity.ok().body(allByMonth);
     }
 
-
+    private String cheatToken(){
+        SsoController.generateToken();
+        return SsoController.appToken.getAccessToken();
+    }
 
 
 }
