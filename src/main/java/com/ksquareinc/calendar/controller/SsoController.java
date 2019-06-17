@@ -57,4 +57,8 @@ public class SsoController {
         }
         return null;
     }
+
+    static void deleteToken(){
+        appToken = new SsoToken();
+    }
 }
