@@ -3,6 +3,8 @@ package com.ksquareinc.calendar.controller;
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.model.User;
 import com.ksquareinc.calendar.service.EventService;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -11,127 +13,98 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/event")
 public class EventController {
 
+    private final String EVENT_UPDATE_MSG = "Event has been updated successfully. ";
+    private final String EVENT_DELETE_MSG = "Event has been deleted successfully. ";
+    private final String EVENT_SAVE_MSG = "New Event has been saved with ID: ";
+    private final String EVENT_GUEST_ERROR = "There were no valid guest for the event. ";
+    private final String EVENT_CREATOR_ERROR = "The creator you specified is not valid for event creation. ";
     @Autowired
     private EventService eventService;
-    private final int HTTP_BAD_AUTH_STATUS = 403;
-    private String BAD_TOKEN_MESSAGE = "Your token is not valid or has expired, try again with a valid token";
-    private String BAD_CREATOR_MESSAGE = "The creator of your event is not a valid user";
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = EVENT_SAVE_MSG),
+            @ApiResponse(code = 400, message = EVENT_CREATOR_ERROR),
+            @ApiResponse(code = 422, message = EVENT_GUEST_ERROR)
+    })
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Event event, @RequestHeader("token") String token){
-        if (SsoController.isTokenValid(token)) {
-            if (isCreatorValidSso(event)){
-                event = getValidGuestsEvent(event);
-                SsoController.deleteToken();
-                if (event != null){
-                    Event newEvent = eventService.save(event);
-                    return ResponseEntity.ok().body("New Event has been saved with ID:" + newEvent.toString());
-                }
-                return ResponseEntity.badRequest().body("Guests error");
+    public ResponseEntity<?> save(@RequestHeader("token") String token, @RequestBody Event event){
+        if (isCreatorValidSso(token, event)){
+            event = getWithValidSsoGuests(token, event);
+            SsoController.deleteToken();
+            if (event != null){
+                Event newEvent = eventService.save(event);
+                return ResponseEntity.ok().body(EVENT_SAVE_MSG + newEvent.toString());
+            }else{
+                return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
             }
         }
-            return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+        return ResponseEntity.badRequest().body(EVENT_CREATOR_ERROR);
     }
 
-
-
     @GetMapping("/{id}")
-    public ResponseEntity<?> findOne(@RequestHeader("token") String token,
-                                         @PathVariable("id") long id) {
-        if (SsoController.isTokenValid(token)){
-            Event event = eventService.findOne(id);
-            return ResponseEntity.ok().body(event);
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+    public ResponseEntity<Event> findOne(@PathVariable("id") long id) {
+        Event event = eventService.findOne(id);
+        return ResponseEntity.ok().body(event);
     }
 
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestHeader("token") String token) {
-        if (SsoController.isTokenValid(token)){
-            List<Event> Events = eventService.findAll();
-            return ResponseEntity.ok().body(Events);
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+    public ResponseEntity<List<Event>> findAll() {
+        List<Event> events = eventService.findAll();
+        return ResponseEntity.ok().body(events);
     }
 
-
     @PutMapping
-    public ResponseEntity<?> update(@RequestHeader("token") String token,
-                                    @RequestBody Event event) {
-        if (SsoController.isTokenValid(token)){
-            eventService.update(event);
-            return ResponseEntity.ok().body("Event has been updated successfully. \n" + event);
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+    @ApiResponse(code = 200, message = EVENT_UPDATE_MSG)
+    public ResponseEntity<?> update(@RequestBody Event event) {
+        eventService.update(event);
+        return ResponseEntity.ok().body(EVENT_UPDATE_MSG + event);
     }
 
     /*---Delete a event by id---*/
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteById(@RequestHeader("token") String token,
-                                        @PathVariable("id") long id) {
-        if (SsoController.isTokenValid(token)) {
-            eventService.deleteById(id);
-            return ResponseEntity.ok().body("Event has been deleted successfully.");
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+    @ApiResponse(code = 200, message = EVENT_UPDATE_MSG)
+    public ResponseEntity<?> deleteById(@PathVariable("id") long id) {
+        eventService.deleteById(id);
+        return ResponseEntity.ok().body(EVENT_DELETE_MSG);
     }
 
     @DeleteMapping
-    public ResponseEntity<?> delete(@RequestHeader("token") String token,
-                                    @RequestBody Event event) {
-        if (SsoController.isTokenValid(token)) {
-            eventService.delete(event);
-            return ResponseEntity.ok().body("Event has been deleted successfully.");
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+    public ResponseEntity<?> delete(@RequestBody Event event) {
+        eventService.delete(event);
+        return ResponseEntity.ok().body(EVENT_DELETE_MSG);
     }
 
     @GetMapping("/byCreator/{id}")
-    public ResponseEntity<?> findByCreator(@RequestHeader("token") String token,
-                                                     @PathVariable("id") long creatorId){
-        if (SsoController.isTokenValid(token)) {
-            List<Event> allByCreator = eventService.findAllByCreator(creatorId);
-            return ResponseEntity.ok().body(allByCreator);
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
+    public ResponseEntity<List<Event>> findByCreator(@PathVariable("id") long creatorId){
+        List<Event> allByCreator = eventService.findAllByCreator(creatorId);
+        return ResponseEntity.ok().body(allByCreator);
     }
 
     @GetMapping("/byCreator")
-    public ResponseEntity<?> findByCreator(@RequestHeader("token") String token,
-                                                     @RequestParam("username") String username){
-        if (SsoController.isTokenValid(token)) {
-            List<Event> allByCreator = eventService.findAllByCreator(username);
-            return ResponseEntity.ok().body(allByCreator);
-        }
-        return ResponseEntity.status(HTTP_BAD_AUTH_STATUS).body(BAD_TOKEN_MESSAGE);
-
+    public ResponseEntity<List<Event>> findByCreator(@RequestParam("username") String username){
+        List<Event> allByCreator = eventService.findAllByCreator(username);
+        return ResponseEntity.ok().body(allByCreator);
     }
 
-
-    //TODO Implement Token validation for the following methods.
     @GetMapping("/byGuest/{id}")
-    public ResponseEntity<List<Event>> findByGuest(@RequestHeader("token") String token,
-                                                   @PathVariable("id") long guestId){
+    public ResponseEntity<List<Event>> findByGuest(@PathVariable("id") long guestId){
         List<Event> allByGuest = eventService.findAllByGuest(guestId);
         return ResponseEntity.ok().body(allByGuest);
     }
 
     @GetMapping("/byGuest")
-    public ResponseEntity<List<Event>> findByGuest(@RequestHeader("token") String token,
-                                                   @RequestParam("username") String username){
+    public ResponseEntity<List<Event>> findByGuest(@RequestParam("username") String username){
         List<Event> allByGuest = eventService.findAllByGuest(username);
         return ResponseEntity.ok().body(allByGuest);
     }
 
     @GetMapping("/byDay")
-    public ResponseEntity<List<Event>> findAllByDay(@RequestHeader("token") String token,
-                                                    @RequestParam(value = "day")
+    public ResponseEntity<List<Event>> findAllByDay(@RequestParam(value = "day")
                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                             LocalDateTime day) {
         List<Event> allByDay = eventService.findAllByDay(day);
@@ -139,8 +112,7 @@ public class EventController {
     }
 
     @GetMapping("/byWeekday")
-    public ResponseEntity<List<Event>> findAllByWeek(@RequestHeader("token") String token,
-                                                     @RequestParam(value = "weekday")
+    public ResponseEntity<List<Event>> findAllByWeek(@RequestParam(value = "weekday")
                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                              LocalDateTime weekDay) {
         List<Event> allByWeek = eventService.findAllByWeek(weekDay);
@@ -155,8 +127,7 @@ public class EventController {
     }
 
     @GetMapping("/byMonthday")
-    public ResponseEntity<List<Event>> findAllByMonth(@RequestHeader("token") String token,
-                                                      @RequestParam(value = "monthday")
+    public ResponseEntity<List<Event>> findAllByMonth(@RequestParam(value = "monthday")
                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                               LocalDateTime monthDay) {
         List<Event> allByMonth = eventService.findAllByMonth(monthDay);
@@ -164,20 +135,19 @@ public class EventController {
     }
 
     @GetMapping("/byMonth")
-    public ResponseEntity<List<Event>> findAllByMonth(@RequestHeader("token") String token,
-                                                      @RequestParam(value = "month") int monthNumber,
+    public ResponseEntity<List<Event>> findAllByMonth(@RequestParam(value = "month") int monthNumber,
                                                       @RequestParam(value = "year") int year) {
         List<Event> allByMonth = eventService.findAllByMonth(monthNumber, year);
         return ResponseEntity.ok().body(allByMonth);
     }
 
 
-    private Event getValidGuestsEvent(Event event){
+    private Event getWithValidSsoGuests(String token, Event event){
         List<String> inputUserNames = new ArrayList<>();
         for (User g : event.getGuests()){
             inputUserNames.add(g.getUsername());
         }
-        List<String> invalidUserNames = SsoController.validateUserNames(SsoController.appToken.getAccessToken(), inputUserNames);
+        List<String> invalidUserNames = SsoController.validateUserNames(token, inputUserNames);
         if (invalidUserNames == null){
             return null;
         }
@@ -196,10 +166,10 @@ public class EventController {
         return event;
     }
 
-    private boolean isCreatorValidSso(Event event) {
+    private boolean isCreatorValidSso(String token, Event event) {
         List<String> requestList = new ArrayList<>();
         requestList.add(event.getCreator().getUsername());
-        List<String> responseList = SsoController.validateUserNames(SsoController.appToken.getAccessToken(), requestList);
+        List<String> responseList = SsoController.validateUserNames(token, requestList);
         if (responseList == null){
             return false;
         } else{

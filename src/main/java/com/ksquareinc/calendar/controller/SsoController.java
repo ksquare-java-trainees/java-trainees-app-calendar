@@ -2,13 +2,13 @@ package com.ksquareinc.calendar.controller;
 
 import com.ksquareinc.calendar.model.sso.SsoToken;
 import com.ksquareinc.calendar.service.retrofit.SsoService;
-import com.ksquareinc.calendar.service.retrofit.util.RetrofitUtils;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 public class SsoController {
@@ -26,7 +26,7 @@ public class SsoController {
     static SsoToken appToken;
 
     public static void generateToken(){
-        Call<SsoToken> ssoTokenCall = service.getUserToken(RetrofitUtils.getTokenBody());
+        Call<SsoToken> ssoTokenCall = service.getUserToken(getTokenBody());
         SsoToken ssoToken = null;
         try {
             ssoToken = ssoTokenCall.execute().body();
@@ -38,6 +38,10 @@ public class SsoController {
         }else{
             appToken = ssoToken;
         }
+    }
+
+    static void deleteToken(){
+        appToken = new SsoToken();
     }
 
     public static boolean isTokenValid(String token){
@@ -58,7 +62,12 @@ public class SsoController {
         return null;
     }
 
-    static void deleteToken(){
-        appToken = new SsoToken();
+
+
+
+    public static RequestBody getTokenBody(){
+        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        RequestBody body = RequestBody.create(mediaType, "username=crmadmin&password=adminpass&grant_type=password&undefined=");
+        return body;
     }
 }

@@ -27,12 +27,9 @@ public class User implements Serializable {
     @ManyToMany(mappedBy = "guests", cascade = CascadeType.ALL)
     private List<Event> eventInvitations = new ArrayList<>();
 
-    private Long ssoId = -1L;
-
     @Column(unique = true, name = USER_USERNAME)
     private String username;
 
-    private String token;
 
     public Long getId() {
         return id;
@@ -42,28 +39,12 @@ public class User implements Serializable {
         this.id = id;
     }
 
-    public Long getSsoId() {
-        return ssoId;
-    }
-
-    public void setSsoId(Long ssoId) {
-        this.ssoId = ssoId;
-    }
-
     public String getUsername() {
         return username;
     }
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public List<Event> getEventsCreated() {
@@ -87,16 +68,14 @@ public class User implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) &&
+        return id.equals(user.id) &&
                 Objects.equals(eventsCreated, user.eventsCreated) &&
                 Objects.equals(eventInvitations, user.eventInvitations) &&
-                Objects.equals(ssoId, user.ssoId) &&
-                Objects.equals(username, user.username) &&
-                Objects.equals(token, user.token);
+                username.equals(user.username);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, eventsCreated, eventInvitations, ssoId, username, token);
+        return Objects.hash(id, eventsCreated, eventInvitations, username);
     }
 }

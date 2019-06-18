@@ -17,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     /*---Add new user---*/
-    @PostMapping
+//    @PostMapping
     public ResponseEntity<?> save(@RequestBody User user) {
         User newUser = userService.save(user);
         return ResponseEntity.ok().body("New User has been saved with ID:" + newUser.getId());
@@ -38,14 +38,14 @@ public class UserController {
     }
 
     /*---Update a user by id---*/
-    @PutMapping
+//    @PutMapping
     public ResponseEntity<?> update(@RequestBody User user) {
         userService.update(user);
         return ResponseEntity.ok().body("User has been updated successfully. \n" + user);
     }
 
     /*---Delete a user by id---*/
-    @DeleteMapping("/{id}")
+//    @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteById(@PathVariable("id") long id) {
         userService.deleteById(id);
         return ResponseEntity.ok().body("User has been deleted successfully.");
