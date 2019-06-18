@@ -28,4 +28,7 @@ public interface EventService extends GenericService<Event>{
 
     boolean isValid(long eventId);
 
+    Event getWithValidSsoGuests(String token, Event event);
+
+    boolean isCreatorValidSso(String token, Event event);
 }

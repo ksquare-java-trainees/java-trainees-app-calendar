@@ -1,5 +1,6 @@
 package com.ksquareinc.calendar.service;
 
+import com.ksquareinc.calendar.controller.SsoController;
 import com.ksquareinc.calendar.dao.EventDao;
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.model.User;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.LocalTime.MIDNIGHT;
@@ -140,6 +142,41 @@ public class EventServiceImpl implements EventService {
             return !isOver;
         }
         return true;
+    }
+
+    public Event getWithValidSsoGuests(String token, Event event){
+        List<String> inputUserNames = new ArrayList<>();
+        for (User g : event.getGuests()){
+            inputUserNames.add(g.getUsername());
+        }
+        List<String> invalidUserNames = SsoController.validateUserNames(token, inputUserNames);
+        if (invalidUserNames == null){
+            return null;
+        }
+
+        inputUserNames.removeAll(invalidUserNames);
+        if (inputUserNames.isEmpty()){
+            return null;
+        }
+
+        List<User> validGuests = new ArrayList<>();
+        for (String name : inputUserNames){
+            User guest = new User();
+            guest.setUsername(name);
+        }
+        event.setGuests(validGuests);
+        return event;
+    }
+
+    public boolean isCreatorValidSso(String token, Event event) {
+        List<String> requestList = new ArrayList<>();
+        requestList.add(event.getCreator().getUsername());
+        List<String> responseList = SsoController.validateUserNames(token, requestList);
+        if (responseList == null){
+            return false;
+        } else{
+            return !(responseList.contains(event.getCreator().getUsername()));
+        }
     }
 
 }

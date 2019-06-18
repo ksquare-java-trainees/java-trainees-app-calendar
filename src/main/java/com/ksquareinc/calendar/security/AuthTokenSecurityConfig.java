@@ -1,5 +1,6 @@
 package com.ksquareinc.calendar.security;
 
+import com.ksquareinc.calendar.controller.SsoController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -26,22 +27,24 @@ import org.springframework.web.client.RestTemplate;
 public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Value("${tokenName}")
-    private String authHeaderName;
-
+    public static String authHeaderName = "SSO_TOKEN";
     @Value("${authUri}")
     private String authURI;
-    //TODO: retrieve this token value from data source
-    //@Value("${tokenVal}")
-    //private String authHeaderValue;
+    @Value("${ssoAPIUri}")
+    public static String ssoApuURI = "http://localhost:8066/ksquare-sso/";
+    private String INVALID_TOKEN_MSG = "Your token is not valid or has expired. Please try again.";
+
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
+        SsoController.BASE_URL = ssoApuURI;
+
         PreAuthTokenHeaderFilter filter = new PreAuthTokenHeaderFilter(authHeaderName);
         filter.setAuthenticationManager(authentication -> {
             String principal = (String) authentication.getPrincipal();
             //if(!authHeaderValue.equals(principal)){
-            if(isActiveToken(principal)){
-                throw new BadCredentialsException("Bad Token");
+            if(!SsoController.isTokenValid(principal)){
+                throw new BadCredentialsException(INVALID_TOKEN_MSG);
             }
             authentication.setAuthenticated(true);
             return authentication;
@@ -62,22 +65,5 @@ public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticated();
     }
 
-    private boolean isActiveToken(final String authToken) {
-        ResponseEntity<String> response;
-        RestTemplate rt = new RestTemplate();
-        //final String authURI = "http://192.168.240.250:8888/ksquare-sso/api/users/auth";
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(authToken);
-
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-
-        try{
-            response = rt.exchange(authURI, HttpMethod.GET, entity, String.class);
-        }catch (HttpClientErrorException e) {
-            response = ResponseEntity.status(403).body("Invalid Token");
-        }
-
-        return !response.getStatusCode().is2xxSuccessful();
-    }
 }

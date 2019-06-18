@@ -1,33 +1,53 @@
 package com.ksquareinc.calendar.controller;
 
 import com.ksquareinc.calendar.model.Event;
-import com.ksquareinc.calendar.model.User;
 import com.ksquareinc.calendar.service.EventService;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
 @RequestMapping("/event")
+@PropertySource("classpath:sec.properties")
 public class EventController {
 
+    private final String EVENT_UPDATE_MSG = "Event has been updated successfully. ";
+    private final String EVENT_DELETE_MSG = "Event has been deleted successfully. ";
+    private final String EVENT_SAVE_MSG = "New Event has been saved with ID: ";
+    private final String EVENT_GUEST_ERROR = "There were no valid guest for the event. ";
+    private final String EVENT_CREATOR_ERROR = "The creator you specified is not valid for event creation. ";
+    @Value("${tokenName}")
+    private final String authHeaderToken = "SSO_TOKEN";
     @Autowired
     private EventService eventService;
 
+
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = EVENT_SAVE_MSG),
+            @ApiResponse(code = 400, message = EVENT_CREATOR_ERROR),
+            @ApiResponse(code = 422, message = EVENT_GUEST_ERROR)
+    })
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody Event event){
-        Event newEvent = eventService.save(event);
-        return ResponseEntity.ok().body(newEvent);
-
+    public ResponseEntity<?> save(@RequestHeader(authHeaderToken) String token, @RequestBody Event event){
+        if (eventService.isCreatorValidSso(token, event)){
+            event = eventService.getWithValidSsoGuests(token, event);
+            if (event != null){
+                Event newEvent = eventService.save(event);
+                return ResponseEntity.ok().body(EVENT_SAVE_MSG + newEvent.toString());
+            }else{
+                return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
+            }
+        }
+        return ResponseEntity.badRequest().body(EVENT_CREATOR_ERROR);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<Event> findOne(@PathVariable("id") long id) {
@@ -37,27 +57,29 @@ public class EventController {
 
     @GetMapping
     public ResponseEntity<List<Event>> findAll() {
-        List<Event> Events = eventService.findAll();
-        return ResponseEntity.ok().body(Events);
+        List<Event> events = eventService.findAll();
+        return ResponseEntity.ok().body(events);
     }
 
     @PutMapping
+    @ApiResponse(code = 200, message = EVENT_UPDATE_MSG)
     public ResponseEntity<?> update(@RequestBody Event event) {
         eventService.update(event);
-        return ResponseEntity.ok().body("Event has been updated successfully. \n" + event);
+        return ResponseEntity.ok().body(EVENT_UPDATE_MSG + event);
     }
 
     /*---Delete a event by id---*/
     @DeleteMapping("/{id}")
+    @ApiResponse(code = 200, message = EVENT_UPDATE_MSG)
     public ResponseEntity<?> deleteById(@PathVariable("id") long id) {
         eventService.deleteById(id);
-        return ResponseEntity.ok().body("Event has been deleted successfully.");
+        return ResponseEntity.ok().body(EVENT_DELETE_MSG);
     }
 
     @DeleteMapping
     public ResponseEntity<?> delete(@RequestBody Event event) {
         eventService.delete(event);
-        return ResponseEntity.ok().body("Event has been deleted successfully.");
+        return ResponseEntity.ok().body(EVENT_DELETE_MSG);
     }
 
     @GetMapping("/byCreator/{id}")
@@ -121,8 +143,5 @@ public class EventController {
         List<Event> allByMonth = eventService.findAllByMonth(monthNumber, year);
         return ResponseEntity.ok().body(allByMonth);
     }
-
-
-
 
 }
