@@ -2,6 +2,7 @@ package com.ksquareinc.calendar.service;
 
 import com.ksquareinc.calendar.dao.UserDao;
 import com.ksquareinc.calendar.model.User;
+import com.ksquareinc.calendar.model.enums.EventsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User findOne(long id) {
         return userDao.findOne(id);
     }
@@ -50,8 +52,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getByUsername(String username){
+    public User findByUsername(String username){
         return userDao.getByUsername(username);
     }
+
+    @Transactional
+    @Override
+    public User findOneWithInvitations(long id) {
+        return userDao.findOneWithUsersList(id, EventsType.INVITATIONS);
+    }
+
+    @Transactional
+    @Override
+    public User findOneWithCreations(long id) {
+        return userDao.findOneWithUsersList(id, EventsType.CREATIONS);
+    }
+
 
 }

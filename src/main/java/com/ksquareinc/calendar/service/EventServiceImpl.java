@@ -14,7 +14,7 @@ import java.util.List;
 import static java.time.LocalTime.MIDNIGHT;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class EventServiceImpl implements EventService {
 
     @Autowired
@@ -24,7 +24,6 @@ public class EventServiceImpl implements EventService {
     private UserService userService;
 
     @Override
-    @Transactional
     public Event save(Event event) {
         checkCreatorExist(event);
         checkGuestsExist(event);
@@ -32,24 +31,20 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @Transactional
     public void deleteById(long id) {
         eventDAO.deleteById(id);
     }
 
-    @Override
     @Transactional
     public void delete(Event event) {
         eventDAO.delete(event);
     }
     @Override
-    @Transactional
     public Event update(Event event){
         return eventDAO.update(event);
     }
 
     @Override
-    @Transactional
     public Event findOne(long id) {
         return eventDAO.findOne(id);
     }
@@ -60,7 +55,7 @@ public class EventServiceImpl implements EventService {
     }
 
     private void checkCreatorExist(Event event){
-        User databaseUser = userService.getByUsername(event.getCreator().getUsername());
+        User databaseUser = userService.findByUsername(event.getCreator().getUsername());
         if (databaseUser != null){
             event.setCreator(databaseUser);
         }else{
@@ -71,7 +66,7 @@ public class EventServiceImpl implements EventService {
     private void checkGuestsExist(Event event){
        List<User> guests =  event.getGuests();
        for (int i = 0; i < guests.size(); i++){
-           User databaseUser = userService.getByUsername(guests.get(i).getUsername());
+           User databaseUser = userService.findByUsername(guests.get(i).getUsername());
            if (databaseUser != null){
                guests.set(i, databaseUser);
            }else{
@@ -79,6 +74,28 @@ public class EventServiceImpl implements EventService {
            }
        }
        event.setGuests(guests);
+    }
+
+    @Override
+    public List<Event> findAllByCreator(Long creatorId) {
+        return userService.findOneWithCreations(creatorId).getEventsCreated();
+    }
+
+    @Override
+    public List<Event> findAllByCreator(String username) {
+        User creator = userService.findByUsername(username);
+        return userService.findOneWithCreations(creator.getId()).getEventsCreated();
+    }
+
+    @Override
+    public List<Event> findAllByGuest(Long guestId) {
+        return userService.findOneWithInvitations(guestId).getEventInvitations();
+    }
+
+    @Override
+    public List<Event> findAllByGuest(String username) {
+        User creator = userService.findByUsername(username);
+        return userService.findOneWithInvitations(creator.getId()).getEventInvitations();
     }
 
     @Override

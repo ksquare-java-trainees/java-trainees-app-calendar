@@ -20,12 +20,12 @@ public class User implements Serializable {
     private Long id;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "creator", cascade = CascadeType.ALL)
-    private List<Event> eventsCreated;
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    private List<Event> eventsCreated = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(mappedBy = "guests", cascade = CascadeType.ALL)
-    private List<Event> eventInvitations  = new ArrayList<>();
+    private List<Event> eventInvitations = new ArrayList<>();
 
     private Long ssoId = -1L;
 

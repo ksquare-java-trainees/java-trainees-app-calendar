@@ -1,6 +1,7 @@
 package com.ksquareinc.calendar.dao;
 
 import com.ksquareinc.calendar.model.User;
+import com.ksquareinc.calendar.model.enums.EventsType;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -8,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import java.util.List;
 
 @Repository
@@ -75,4 +74,18 @@ public class UserDaoImpl implements UserDao  {
         }
         return (User) list.get(0);
     }
+
+    @Override
+    public User findOneWithUsersList(long id, EventsType eventType) {
+        Session session = sessionFactory.getCurrentSession();
+        CriteriaBuilder cb = session.getCriteriaBuilder();
+        CriteriaQuery<User> cq = cb.createQuery(User.class);
+        Root<User> root = cq.from(User.class);
+        root.fetch(eventType.getAttribute(), JoinType.INNER);
+        cq.select(root).where(cb.equal(root.get("id"),id)).distinct(true);
+        Query<User> query = session.createQuery(cq);
+        return query.getSingleResult();
+    }
+
+
 }
