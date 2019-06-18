@@ -51,7 +51,7 @@ public class UserController {
         return ResponseEntity.ok().body("User has been deleted successfully.");
     }
 
-    @DeleteMapping
+//    @DeleteMapping
     public ResponseEntity<?> delete(@RequestBody User user) {
         userService.delete(user);
         return ResponseEntity.ok().body("User has been deleted successfully.");

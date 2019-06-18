@@ -114,7 +114,7 @@ public class EventController {
         return ResponseEntity.ok().body(allByDay);
     }
 
-    @GetMapping("/byWeekday")
+    @GetMapping("/byWeek/byDay")
     public ResponseEntity<List<Event>> findAllByWeek(@RequestParam(value = "weekday")
                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                              LocalDateTime weekDay) {
@@ -129,7 +129,7 @@ public class EventController {
         return ResponseEntity.ok().body(allByWeek);
     }
 
-    @GetMapping("/byMonthday")
+    @GetMapping("/byMonth/byDay")
     public ResponseEntity<List<Event>> findAllByMonth(@RequestParam(value = "monthday")
                                                       @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
                                                               LocalDateTime monthDay) {
