@@ -5,8 +5,6 @@ import com.ksquareinc.calendar.security.AuthTokenSecurityConfig;
 import com.ksquareinc.calendar.service.retrofit.SsoService;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -15,10 +13,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class SsoController {
-    public static String BASE_URL = AuthTokenSecurityConfig.ssoApuURI;
+
 
     private static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(AuthTokenSecurityConfig.ssoApiURI)
             .addConverterFactory(JacksonConverterFactory.create())
             .build();
 

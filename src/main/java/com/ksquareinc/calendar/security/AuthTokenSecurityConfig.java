@@ -4,42 +4,31 @@ import com.ksquareinc.calendar.controller.SsoController;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 @Configuration
 @EnableWebSecurity
 @PropertySource("classpath:sec.properties")
 public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Value("${tokenName}")
-    public static String authHeaderName = "SSO_TOKEN";
     @Value("${authUri}")
     private String authURI;
     @Value("${ssoAPIUri}")
-    public static String ssoApuURI = "http://localhost:8066/ksquare-sso/";
+    public static String ssoApiURI = "http://localhost:8066/ksquare-sso/";
+    @Value("${tokenName}")
+    public static final String TOKEN_KEY = "SSO_TOKEN";
     private String INVALID_TOKEN_MSG = "Your token is not valid or has expired. Please try again.";
 
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
-        SsoController.BASE_URL = ssoApuURI;
-
-        PreAuthTokenHeaderFilter filter = new PreAuthTokenHeaderFilter(authHeaderName);
+        PreAuthTokenHeaderFilter filter = new PreAuthTokenHeaderFilter(TOKEN_KEY);
         filter.setAuthenticationManager(authentication -> {
             String principal = (String) authentication.getPrincipal();
             //if(!authHeaderValue.equals(principal)){
