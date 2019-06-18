@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -19,18 +20,18 @@ public class UserDaoImpl implements UserDao  {
     private SessionFactory sessionFactory;
 
     @Override
-    public long save(User user) {
+    public User create(User user) {
         sessionFactory.getCurrentSession().save(user);
-        return user.getId();
+        return user;
     }
 
     @Override
-    public User get(long id) {
+    public User findOne(long id) {
         return sessionFactory.getCurrentSession().get(User.class, id);
     }
 
     @Override
-    public List<User> list() {
+    public List<User> findAll() {
         Session session = sessionFactory.getCurrentSession();
         CriteriaBuilder cb = session.getCriteriaBuilder();
         CriteriaQuery<User> cq = cb.createQuery(User.class);
@@ -41,21 +42,22 @@ public class UserDaoImpl implements UserDao  {
     }
 
     @Override
-    public void update(long id, User user) {
+    @Transactional
+    public User update(User user) {
         Session session = sessionFactory.getCurrentSession();
-        User user2 = session.byId(User.class).load(id);
-        user2.setUsername(user.getUsername());
-        user2.setSsoId(user.getSsoId());
-        user2.setToken(user.getToken());
-        user2.setEventsCreated(user.getEventsCreated());
-        user2.setEventInvitations(user.getEventInvitations());
-        session.flush();
+        return (User) session.merge(user);
     }
 
     @Override
-    public void delete(long id) {
+    public void deleteById(long id) {
         Session session = sessionFactory.getCurrentSession();
-        User user = session.byId(User.class).load(id);
+        User user = findOne(id);
+        session.delete(user);
+    }
+
+    @Override
+    public void delete(User user){
+        Session session = sessionFactory.getCurrentSession();
         session.delete(user);
     }
 

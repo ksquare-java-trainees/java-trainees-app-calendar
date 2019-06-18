@@ -35,7 +35,7 @@ public class AppConfig {
     }
 
     @Bean
-    private DataSource dataSource() {
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(env.getRequiredProperty("jdbc.driver"));
         dataSource.setUrl(env.getRequiredProperty("jdbc.url"));
@@ -46,7 +46,7 @@ public class AppConfig {
     }
 
     @Bean
-    private Properties hibernateProperties() {
+    public Properties hibernateProperties() {
         Properties props = new Properties();
         // Setting Hibernate properties
         props.put(SHOW_SQL, env.getProperty("hibernate.show_sql"));

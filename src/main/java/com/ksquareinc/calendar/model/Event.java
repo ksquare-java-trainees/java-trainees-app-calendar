@@ -1,22 +1,25 @@
 package com.ksquareinc.calendar.model;
 
+
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Entity(name = "Events")
-public class Event {
+@Transactional
+public class Event implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "creator_id", referencedColumnName = "id" ,nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "creator_id", referencedColumnName = "id", nullable = false)
     private User creator;
 
     private String subject;
@@ -29,9 +32,7 @@ public class Event {
 
     private String description;
 
-    @ManyToMany(cascade = {
-            CascadeType.ALL
-    }, fetch=FetchType.EAGER)
+    @ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(name = "event_guests",
             joinColumns = @JoinColumn(name = "event_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")

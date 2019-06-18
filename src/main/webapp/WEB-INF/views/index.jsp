@@ -35,7 +35,7 @@
 <nav id="menu">
   <ul class="links">
     <li><a href="">Home</a></li>
-    <li><a href="swagger-ui.html">Swagger</a></li>
+    <li><a href="swagger-ui.html">Documentation (Swagger)</a></li>
   </ul>
 </nav>
 
@@ -60,20 +60,22 @@
     </div>
   </article>
   <article>
-    <img src="images/slide03.jpg"  alt="" />
-    <div class="inner">
-      <header>
-        <p>For using our application use an application like</p>
-        <h2>Postman</h2>
-      </header>
-    </div>
+    <a href="swagger-ui.html">
+      <img src="images/slide03.jpg"  alt="" />
+      <div class="inner">
+        <header>
+          <p>You can test this application with our NEW:</p>
+          <h2>SWAGGER PAGE</h2>
+        </header>
+      </div>
+    </a>
   </article>
   <article>
     <img src="images/slide04.jpg"  alt="" />
     <div class="inner">
       <header>
-        <p>This page is only for information proposes</p>
-        <h2>A Placeholder</h2>
+        <p>You can access the Swagger documentation in:</p>
+        <h2>Right side MENU</h2>
       </header>
     </div>
   </article>
@@ -81,8 +83,8 @@
     <img src="images/slide05.jpg"  alt="" />
     <div class="inner">
       <header>
-        <p>You can access de the Swagger documentation in:</p>
-        <h2>The menu</h2>
+        <p>To use our application use an application like</p>
+        <h2>Postman</h2>
       </header>
     </div>
   </article>
