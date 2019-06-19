@@ -1,7 +1,6 @@
 package com.ksquareinc.calendar.service;
 
 import com.ksquareinc.calendar.model.Event;
-import com.ksquareinc.calendar.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;

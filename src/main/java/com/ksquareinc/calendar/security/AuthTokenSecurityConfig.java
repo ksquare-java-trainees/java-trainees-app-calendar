@@ -23,7 +23,7 @@ public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
     public static String ssoApiURI = "http://localhost:8066/ksquare-sso/";
     @Value("${tokenName}")
     public static final String TOKEN_KEY = "SSO_TOKEN";
-    private String INVALID_TOKEN_MSG = "Your token is not valid or has expired. Please try again.";
+    private final String INVALID_TOKEN_MSG = "Your token is not valid or has expired. Please try again.";
 
 
     @Override

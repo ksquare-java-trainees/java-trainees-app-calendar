@@ -4,7 +4,7 @@ public enum EventsType {
     CREATIONS ("eventsCreated"),
     INVITATIONS("eventInvitations");
 
-    private String attribute;
+    private final String attribute;
 
     EventsType(String attribute) {
         this.attribute = attribute;

@@ -18,7 +18,6 @@ import static java.time.LocalTime.MIDNIGHT;
 @Service
 @Transactional
 public class EventServiceImpl implements EventService {
-
     @Autowired
     private EventDao eventDAO;
 
