@@ -36,7 +36,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
     }
     private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder().title("Event Calendar REST API")
-                .description("Employee Management REST API")
+                .description("Event Management REST API")
                 .contact(new Contact("2019 Java Trainees", "https://www.ksquareinc.com/", "roberto.gil@ksquareinc.com"))
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")

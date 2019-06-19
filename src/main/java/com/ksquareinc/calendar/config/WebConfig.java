@@ -8,7 +8,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableWebMvc
 @ComponentScan("com.ksquareinc.calendar.controller")
-@EnableSwagger2
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
