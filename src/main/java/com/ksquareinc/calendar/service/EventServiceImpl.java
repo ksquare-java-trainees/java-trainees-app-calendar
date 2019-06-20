@@ -6,7 +6,6 @@ import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;

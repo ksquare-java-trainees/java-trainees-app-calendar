@@ -1,7 +1,9 @@
 package com.ksquareinc.calendar.controller;
 
+import com.ksquareinc.calendar.model.Customer;
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.service.EventService;
+import com.ksquareinc.calendar.service.NotificationService;
 import com.ksquareinc.calendar.service.retrofit.WebHookService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -17,11 +19,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/notify")
+@RequestMapping("/api/notification")
 public class NotificationController {
 
     @Autowired
     EventService eventService;
+    @Autowired
+    NotificationService notificationService;
 
     private static final String NOTIFY_SUCCESS = "The notification has been successfully send.";
     private static final String NOTIFY_EVENT_ERROR = "There is no active Event with that ID, Please check your input";
@@ -48,6 +52,25 @@ public class NotificationController {
         }
 
     }
+    @PostMapping
+    public ResponseEntity<?> registerCustomer(@RequestBody Customer customer){
+        Customer c = notificationService.save(customer);
+        ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
+        if(c != null){
+            response = ResponseEntity.ok().body(OK + c.toString());
+        }
+
+        return response;
+    }
+
+
+    @PutMapping
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
+        Customer c = notificationService.save(customer);
+        ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
+        if(c != null) {
+            response = ResponseEntity.ok().body(OK + c.toString());
+        }}
 
     public void notifyWebHooks(Event event){
         //TODO Get WebHooks from database;

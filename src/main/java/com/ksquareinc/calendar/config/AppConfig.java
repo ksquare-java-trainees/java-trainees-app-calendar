@@ -18,8 +18,10 @@ import static org.hibernate.cfg.AvailableSettings.*;
 @PropertySource("classpath:db.properties")
 @PropertySource("classpath:sec.properties")
 @EnableTransactionManagement
-@ComponentScans(value = { @ComponentScan("com.ksquareinc.calendar.dao"),
-        @ComponentScan("com.ksquareinc.calendar.service") })
+@ComponentScans(value = {
+    @ComponentScan("com.ksquareinc.calendar.dao"),
+    @ComponentScan("com.ksquareinc.calendar.service")
+})
 public class AppConfig {
 
     @Autowired

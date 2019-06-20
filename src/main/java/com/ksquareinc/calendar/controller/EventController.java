@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/api/event")
 public class EventController {
 
     private final String EVENT_UPDATE_MSG = "Event has been updated successfully. ";
@@ -32,14 +32,14 @@ public class EventController {
             @ApiResponse(code = 422, message = EVENT_GUEST_ERROR)
     })
     @PostMapping
-    public ResponseEntity<?> save(@RequestHeader(AuthTokenSecurityConfig.TOKEN_KEY) String token, @RequestBody Event event){
+    public ResponseEntity<?> save(@RequestHeader(AuthTokenSecurityConfig.authHeaderName) String token, @RequestBody Event event){
         if (eventService.isCreatorValidSso(token, event)){
             event = eventService.getWithValidSsoGuests(token, event);
             if (event != null){
                 Event newEvent = eventService.save(event);
                 return ResponseEntity.ok().body(EVENT_SAVE_MSG + newEvent.toString());
             }else{
-                return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
+                    return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
             }
         }
         return ResponseEntity.badRequest().body(EVENT_CREATOR_ERROR);

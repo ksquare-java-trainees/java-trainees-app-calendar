@@ -14,7 +14,6 @@ import java.util.List;
 
 public class SsoController {
 
-
     private static final Retrofit retrofit = new Retrofit.Builder()
             .baseUrl(AuthTokenSecurityConfig.ssoApiURI)
             .addConverterFactory(JacksonConverterFactory.create())

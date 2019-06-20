@@ -39,7 +39,7 @@ public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
             return authentication;
         });
 
-        httpSecurity.antMatcher("/event/**")
+        httpSecurity.antMatcher("/api/**")
                 .csrf()
                 .disable()
                 .sessionManagement()
