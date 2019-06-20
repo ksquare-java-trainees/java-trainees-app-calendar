@@ -23,7 +23,6 @@ public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     Environment environment;
 
-    private String authURI;
     public static String ssoApiURI;
     public static String tokenKey;
 
