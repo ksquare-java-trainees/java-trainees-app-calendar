@@ -27,23 +27,26 @@ public class NotificationController {
     @Autowired
     NotificationService notificationService;
 
-    private static final String NOTIFY_SUCCESS = "The notification has been successfully send.";
-    private static final String NOTIFY_EVENT_ERROR = "There is no active Event with that ID, Please check your input";
+    private final String NOTIFY_EVENT_SUCCESS = "The notification has been successfully send.";
+    private final String NOTIFY_EVENT_ERROR = "There is no active Event with that ID, Please check your input";
+    private final String NOTIFICATION_ERROR = "The information given are not acceptable ";
+    private final String NOTIFICATION_SUCCESS = "Your operation was successful ";
+
 
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = NOTIFY_SUCCESS),
+            @ApiResponse(code = 200, message = NOTIFY_EVENT_SUCCESS),
             @ApiResponse(code = 422, message = NOTIFY_EVENT_ERROR)
     })
-    @PostMapping("/{eventId}")
+    @PostMapping("/send/{eventId}")
     public ResponseEntity<?> notifyByEventId(@PathVariable long eventId){
         if (eventService.isValid(eventId)){
             notifyWebHooks(eventService.findOne(eventId));
-            return ResponseEntity.ok().body(NOTIFY_SUCCESS);
+            return ResponseEntity.ok().body(NOTIFY_EVENT_SUCCESS);
         }
         return ResponseEntity.status(422).body(NOTIFY_EVENT_ERROR);
     }
 
-    @PostMapping
+    @PostMapping("/send")
     public ResponseEntity<?> notifyByEventId(@RequestBody Event event){
         if (event == null || event.getId() == null){
             return ResponseEntity.status(422).body(NOTIFY_EVENT_ERROR);
@@ -55,9 +58,9 @@ public class NotificationController {
     @PostMapping
     public ResponseEntity<?> registerCustomer(@RequestBody Customer customer){
         Customer c = notificationService.save(customer);
-        ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
+        ResponseEntity<String> response = ResponseEntity.badRequest().body(NOTIFICATION_ERROR);
         if(c != null){
-            response = ResponseEntity.ok().body(OK + c.toString());
+            response = ResponseEntity.ok().body(NOTIFICATION_SUCCESS + c.toString());
         }
 
         return response;
@@ -67,10 +70,12 @@ public class NotificationController {
     @PutMapping
     public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
         Customer c = notificationService.save(customer);
-        ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
+        ResponseEntity<String> response = ResponseEntity.badRequest().body(NOTIFICATION_ERROR);
         if(c != null) {
-            response = ResponseEntity.ok().body(OK + c.toString());
-        }}
+            response = ResponseEntity.ok().body(NOTIFICATION_SUCCESS + c.toString());
+        }
+        return response;
+    }
 
     public void notifyWebHooks(Event event){
         //TODO Get WebHooks from database;

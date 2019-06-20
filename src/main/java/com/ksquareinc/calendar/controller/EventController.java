@@ -6,6 +6,8 @@ import com.ksquareinc.calendar.service.EventService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/event")
+@PropertySource("classpath:sec.properties")
 public class EventController {
 
     private final String EVENT_UPDATE_MSG = "Event has been updated successfully. ";
@@ -25,14 +28,13 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
-
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = EVENT_SAVE_MSG),
             @ApiResponse(code = 400, message = EVENT_CREATOR_ERROR),
             @ApiResponse(code = 422, message = EVENT_GUEST_ERROR)
     })
     @PostMapping
-    public ResponseEntity<?> save(@RequestHeader(AuthTokenSecurityConfig.authHeaderName) String token, @RequestBody Event event){
+    public ResponseEntity<?> save(@RequestHeader(value = "${tokenName}") String token, @RequestBody Event event){
         if (eventService.isCreatorValidSso(token, event)){
             event = eventService.getWithValidSsoGuests(token, event);
             if (event != null){
