@@ -1,13 +1,11 @@
 package com.ksquareinc.calendar.controller;
 
 import com.ksquareinc.calendar.model.Event;
-import com.ksquareinc.calendar.security.AuthTokenSecurityConfig;
 import com.ksquareinc.calendar.service.EventService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

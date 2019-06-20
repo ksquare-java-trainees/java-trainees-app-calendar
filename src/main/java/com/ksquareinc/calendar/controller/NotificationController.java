@@ -4,21 +4,13 @@ import com.ksquareinc.calendar.model.Customer;
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.service.EventService;
 import com.ksquareinc.calendar.service.NotificationService;
-import com.ksquareinc.calendar.service.retrofit.WebHookService;
 import com.ksquareinc.calendar.util.UrlValidator;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import retrofit2.Retrofit;
-import retrofit2.converter.jackson.JacksonConverterFactory;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/notification")

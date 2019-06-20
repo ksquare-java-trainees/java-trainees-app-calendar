@@ -159,8 +159,9 @@ public class EventServiceImpl implements EventService {
 
         List<User> validGuests = new ArrayList<>();
         for (String name : inputUserNames){
-            User guest = new User();
-            guest.setUsername(name);
+                User guest = new User();
+                guest.setUsername(name);
+                validGuests.add(guest);
         }
         event.setGuests(validGuests);
         return event;
