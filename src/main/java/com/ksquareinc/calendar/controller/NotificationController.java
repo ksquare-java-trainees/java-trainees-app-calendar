@@ -5,6 +5,7 @@ import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.service.EventService;
 import com.ksquareinc.calendar.service.NotificationService;
 import com.ksquareinc.calendar.service.retrofit.WebHookService;
+import com.ksquareinc.calendar.util.UrlValidator;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -22,7 +24,6 @@ import java.util.logging.Logger;
 @RequestMapping("/notification")
 public class NotificationController {
 
-    private final String VALID_URL_REGEX = "(?i)^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))\\.?)(?::\\d{2,5})?(?:[/?#]\\S*)?$";
     @Autowired
     EventService eventService;
     @Autowired
@@ -59,13 +60,18 @@ public class NotificationController {
 
     }
     @PostMapping
+    @PutMapping
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = CUSTOMER_SUCCESS),
+            @ApiResponse(code = 422, message = CUSTOMER_URL_ERROR),
+            @ApiResponse(code = 422, message = CUSTOMER_ENDPOINT_ERROR),
+            @ApiResponse(code = 400, message = CUSTOMER_ERROR)
+    })
     public ResponseEntity<?> registerCustomer(@RequestBody Customer customer){
         if(customer != null){
-            if (!customer.getCustomerAPIUrl().endsWith("/") || !customer.getCustomerAPIUrl()
-                    .matches(VALID_URL_REGEX)){
+            if (!customer.getCustomerAPIUrl().endsWith("/") || !UrlValidator.isUrl(customer.getCustomerAPIUrl())){
                 return ResponseEntity.status(422).body(CUSTOMER_URL_ERROR);
-            }
-            if (customer.getEndPoint().endsWith("/") || customer.getEndPoint().startsWith("/")){
+            }else if (customer.getEndPoint().endsWith("/") || customer.getEndPoint().startsWith("/")){
                 return ResponseEntity.status(422).body(CUSTOMER_ENDPOINT_ERROR);
             }
             Customer c = notificationService.save(customer);
@@ -77,10 +83,15 @@ public class NotificationController {
 
 
     @PutMapping
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = CUSTOMER_SUCCESS),
+            @ApiResponse(code = 422, message = CUSTOMER_URL_ERROR),
+            @ApiResponse(code = 422, message = CUSTOMER_ENDPOINT_ERROR),
+            @ApiResponse(code = 400, message = CUSTOMER_ERROR)
+    })
     public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
         if(customer != null){
-            if (customer.getCustomerAPIUrl().endsWith("/") && !customer.getCustomerAPIUrl()
-                    .matches(VALID_URL_REGEX)){
+            if (!customer.getCustomerAPIUrl().endsWith("/") || !UrlValidator.isUrl(customer.getCustomerAPIUrl())){
                 return ResponseEntity.status(422).body(CUSTOMER_URL_ERROR);
             }else if (customer.getEndPoint().endsWith("/") || customer.getEndPoint().startsWith("/")){
                 return ResponseEntity.status(422).body(CUSTOMER_ENDPOINT_ERROR);

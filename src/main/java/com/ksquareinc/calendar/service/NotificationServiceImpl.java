@@ -73,11 +73,17 @@ public class NotificationServiceImpl implements NotificationService{
     }
 
     private void notifyWebHookEndpoint(String baseUrl, String endpoint, Event event){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build();
+        Retrofit retrofit;
+        try{
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(baseUrl)
+                    .addConverterFactory(JacksonConverterFactory.create())
+                    .build();
 
+        }catch (IllegalArgumentException e){
+            Logger.getGlobal().warning("Failed notifying API with URL" + baseUrl);
+            return;
+        }
         WebHookService webHookService = retrofit.create(WebHookService.class);
         try {
             if(!webHookService.sendNotification(endpoint, event).execute().isSuccessful()){
