@@ -1,6 +1,10 @@
 package com.ksquareinc.calendar.model;
 
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -26,6 +30,8 @@ public class Event implements Serializable {
 
     private boolean isAllDay;
 
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime dateBegin;
 
     private LocalDateTime dateEnd;
