@@ -24,8 +24,6 @@ public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity httpSecurity) throws Exception{
-        //SsoController.BASE_URL = ssoApiURI;
-
         PreAuthTokenHeaderFilter filter = new PreAuthTokenHeaderFilter(authHeaderName);
         filter.setAuthenticationManager(authentication -> {
             String principal = (String) authentication.getPrincipal();

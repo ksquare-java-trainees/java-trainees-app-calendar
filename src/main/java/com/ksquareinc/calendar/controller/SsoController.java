@@ -13,17 +13,16 @@ import java.io.IOException;
 import java.util.List;
 
 public class SsoController {
-    public static String BASE_URL = AuthTokenSecurityConfig.ssoApiURI;
 
-    private static Retrofit retrofit = new Retrofit.Builder()
-            .baseUrl(BASE_URL)
+    private static final Retrofit retrofit = new Retrofit.Builder()
+            .baseUrl(AuthTokenSecurityConfig.ssoApiURI)
             .addConverterFactory(JacksonConverterFactory.create())
             .build();
 
-    private static SsoService service = retrofit.create(SsoService.class);
+    private static final SsoService service = retrofit.create(SsoService.class);
 
 
-    static SsoToken appToken;
+    private static SsoToken appToken;
 
     public static void generateToken(){
         Call<SsoToken> ssoTokenCall = service.getUserToken(getTokenBody());
@@ -64,7 +63,6 @@ public class SsoController {
 
     private static RequestBody getTokenBody(){
         MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        RequestBody body = RequestBody.create(mediaType, "username=crmadmin&password=adminpass&grant_type=password&undefined=");
-        return body;
+        return RequestBody.create(mediaType, "username=crmadmin&password=adminpass&grant_type=password&undefined=");
     }
 }

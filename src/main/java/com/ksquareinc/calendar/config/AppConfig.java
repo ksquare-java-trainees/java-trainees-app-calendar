@@ -9,6 +9,7 @@ import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.sql.DataSource;
+import java.util.Objects;
 import java.util.Properties;
 
 import static org.hibernate.cfg.AvailableSettings.*;
@@ -51,15 +52,15 @@ public class AppConfig {
     public Properties hibernateProperties() {
         Properties props = new Properties();
         // Setting Hibernate properties
-        props.put(SHOW_SQL, env.getProperty("hibernate.show_sql"));
-        props.put(HBM2DDL_AUTO, env.getProperty("hibernate.hbm2ddl.auto"));
+        props.put(SHOW_SQL, Objects.requireNonNull(env.getProperty("hibernate.show_sql")));
+        props.put(HBM2DDL_AUTO, Objects.requireNonNull(env.getProperty("hibernate.hbm2ddl.auto")));
 
         // Setting C3P0 properties
-        props.put(C3P0_MIN_SIZE, env.getProperty("hibernate.c3p0.min_size"));
-        props.put(C3P0_MAX_SIZE, env.getProperty("hibernate.c3p0.max_size"));
-        props.put(C3P0_ACQUIRE_INCREMENT, env.getProperty("hibernate.c3p0.acquire_increment"));
-        props.put(C3P0_TIMEOUT, env.getProperty("hibernate.c3p0.timeout"));
-        props.put(C3P0_MAX_STATEMENTS, env.getProperty("hibernate.c3p0.max_statements"));
+        props.put(C3P0_MIN_SIZE, Objects.requireNonNull(env.getProperty("hibernate.c3p0.min_size")));
+        props.put(C3P0_MAX_SIZE, Objects.requireNonNull(env.getProperty("hibernate.c3p0.max_size")));
+        props.put(C3P0_ACQUIRE_INCREMENT, Objects.requireNonNull(env.getProperty("hibernate.c3p0.acquire_increment")));
+        props.put(C3P0_TIMEOUT, Objects.requireNonNull(env.getProperty("hibernate.c3p0.timeout")));
+        props.put(C3P0_MAX_STATEMENTS, Objects.requireNonNull(env.getProperty("hibernate.c3p0.max_statements")));
 
         return props;
     }

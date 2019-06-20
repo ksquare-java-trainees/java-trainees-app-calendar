@@ -6,15 +6,15 @@ import javax.servlet.http.HttpServletRequest;
 
 public class PreAuthTokenHeaderFilter extends AbstractPreAuthenticatedProcessingFilter {
 
-    private String authHEaderName;
+    private String authHeaderName;
 
-    public PreAuthTokenHeaderFilter(String authHEaderName) {
-        this.authHEaderName = authHEaderName;
+    public PreAuthTokenHeaderFilter(String authHeaderName) {
+        this.authHeaderName = authHeaderName;
     }
 
     @Override
     protected Object getPreAuthenticatedPrincipal(HttpServletRequest request) {
-        return request.getHeader(authHEaderName);
+        return request.getHeader(authHeaderName);
     }
 
     @Override

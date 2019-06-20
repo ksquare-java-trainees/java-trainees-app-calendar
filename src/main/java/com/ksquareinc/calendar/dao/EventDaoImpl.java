@@ -17,7 +17,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Repository
-public class  EventDaoImpl implements EventDao {
+public class EventDaoImpl implements EventDao {
 
     @Autowired
     private SessionFactory sessionFactory;
