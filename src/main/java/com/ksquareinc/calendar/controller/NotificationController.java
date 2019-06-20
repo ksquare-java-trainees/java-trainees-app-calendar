@@ -3,6 +3,8 @@ package com.ksquareinc.calendar.controller;
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.service.EventService;
 import com.ksquareinc.calendar.service.retrofit.WebHookService;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,22 +23,26 @@ public class NotificationController {
     @Autowired
     EventService eventService;
 
-    private static final String NOTIFY_SUCCESS = "Placeholder for notification response object.";
-    private static final String EVENT_ERROR = "There is no active Event with that ID, Please check your input";
+    private static final String NOTIFY_SUCCESS = "The notification has been successfully send.";
+    private static final String NOTIFY_EVENT_ERROR = "There is no active Event with that ID, Please check your input";
 
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = NOTIFY_SUCCESS),
+            @ApiResponse(code = 422, message = NOTIFY_EVENT_ERROR)
+    })
     @PostMapping("/{eventId}")
     public ResponseEntity<?> notifyByEventId(@PathVariable long eventId){
         if (eventService.isValid(eventId)){
             notifyWebHooks(eventService.findOne(eventId));
             return ResponseEntity.ok().body(NOTIFY_SUCCESS);
         }
-        return ResponseEntity.badRequest().body(EVENT_ERROR);
+        return ResponseEntity.status(422).body(NOTIFY_EVENT_ERROR);
     }
 
     @PostMapping
     public ResponseEntity<?> notifyByEventId(@RequestBody Event event){
         if (event == null || event.getId() == null){
-            return ResponseEntity.badRequest().body(EVENT_ERROR);
+            return ResponseEntity.status(422).body(NOTIFY_EVENT_ERROR);
         }else{
             return notifyByEventId(event.getId());
         }
@@ -48,7 +54,7 @@ public class NotificationController {
         Map<String,String> webHooks = new HashMap<>();
         webHooks.put("http://localhost:8080/ksquare-chat/", "notify");
         webHooks.put("http://localhost:8080/ksquare-chat2/", "notify");
-        webHooks.forEach((baseUrl, endpoint) -> notifyWebHookEndpoint(baseUrl,endpoint,event));
+        webHooks.forEach((baseUrl, endpoint) -> notifyWebHookEndpoint(baseUrl, endpoint, event));
     }
 
     private void notifyWebHookEndpoint(String baseUrl, String endpoint, Event event){

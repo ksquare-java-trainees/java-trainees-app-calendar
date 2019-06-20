@@ -16,6 +16,7 @@ import static org.hibernate.cfg.AvailableSettings.*;
 
 @Configuration
 @PropertySource("classpath:db.properties")
+@PropertySource("classpath:sec.properties")
 @EnableTransactionManagement
 @ComponentScans(value = { @ComponentScan("com.ksquareinc.calendar.dao"),
         @ComponentScan("com.ksquareinc.calendar.service") })
@@ -59,7 +60,6 @@ public class AppConfig {
         props.put(C3P0_ACQUIRE_INCREMENT, Objects.requireNonNull(env.getProperty("hibernate.c3p0.acquire_increment")));
         props.put(C3P0_TIMEOUT, Objects.requireNonNull(env.getProperty("hibernate.c3p0.timeout")));
         props.put(C3P0_MAX_STATEMENTS, Objects.requireNonNull(env.getProperty("hibernate.c3p0.max_statements")));
-
         return props;
     }
 
