@@ -48,8 +48,11 @@ public class NotificationController {
     public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
         Customer c = notificationService.save(customer);
         ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
-        if(c != null){
+        if(c != null) {
             response = ResponseEntity.ok().body(OK + c.toString());
+        }
+        return response;
+    }
 
     public void notifyWebHooks(Event event){
         //TODO Get WebHooks from database;
