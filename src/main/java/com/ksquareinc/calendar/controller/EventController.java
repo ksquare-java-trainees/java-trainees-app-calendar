@@ -58,12 +58,23 @@ public class EventController {
         List<Event> events = eventService.findAll();
         return ResponseEntity.ok().body(events);
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = EVENT_UPDATE_MSG),
+            @ApiResponse(code = 400, message = EVENT_CREATOR_ERROR),
+            @ApiResponse(code = 422, message = EVENT_GUEST_ERROR)
+    })
     @PutMapping
-    @ApiResponse(code = 200, message = EVENT_UPDATE_MSG)
-    public ResponseEntity<?> update(@RequestBody Event event) {
-        eventService.update(event);
-        return ResponseEntity.ok().body(EVENT_UPDATE_MSG + event);
+    public ResponseEntity<?> update(@RequestHeader(value = "${tokenName}") String token, @RequestBody Event event) {
+        if (eventService.isCreatorValidSso(token, event)){
+            event = eventService.getWithValidSsoGuests(token, event);
+            if (event != null){
+                eventService.update(event);
+                return ResponseEntity.ok().body(EVENT_UPDATE_MSG + event.toString());
+            }else{
+                return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
+            }
+        }
+        return ResponseEntity.badRequest().body(EVENT_CREATOR_ERROR);
     }
 
     /*---Delete a event by id---*/

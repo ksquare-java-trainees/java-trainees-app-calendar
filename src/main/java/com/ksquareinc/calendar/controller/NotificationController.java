@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 @RequestMapping("/notification")
 public class NotificationController {
 
+    private final String VALID_URL_REGEX = "(?i)^(?:(?:https?|ftp)://)(?:\\S+(?::\\S*)?@)?(?:(?!(?:10|127)(?:\\.\\d{1,3}){3})(?!(?:169\\.254|192\\.168)(?:\\.\\d{1,3}){2})(?!172\\.(?:1[6-9]|2\\d|3[0-1])(?:\\.\\d{1,3}){2})(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)(?:\\.(?:[a-z\\u00a1-\\uffff0-9]-*)*[a-z\\u00a1-\\uffff0-9]+)*(?:\\.(?:[a-z\\u00a1-\\uffff]{2,}))\\.?)(?::\\d{2,5})?(?:[/?#]\\S*)?$";
     @Autowired
     EventService eventService;
     @Autowired
@@ -29,8 +30,10 @@ public class NotificationController {
 
     private final String NOTIFY_EVENT_SUCCESS = "The notification has been successfully send.";
     private final String NOTIFY_EVENT_ERROR = "There is no active Event with that ID, Please check your input";
-    private final String NOTIFICATION_ERROR = "The information given are not acceptable ";
-    private final String NOTIFICATION_SUCCESS = "Your operation was successful ";
+    private final String CUSTOMER_ERROR = "The information given was not acceptable ";
+    private final String CUSTOMER_SUCCESS = "Your operation was successful ";
+    private final String CUSTOMER_URL_ERROR = CUSTOMER_ERROR + ". The format for your API url must be as following: 'http://yoursite.com/yourapi/'. (Including a slash at the end) ";
+    private final String CUSTOMER_ENDPOINT_ERROR = CUSTOMER_ERROR + ". The format for your API url must be as following: 'getNotification' or 'api/calendarNotification'. (Without slashes at the start or end) ";
 
 
     @ApiResponses(value = {
@@ -40,7 +43,7 @@ public class NotificationController {
     @PostMapping("/send/{eventId}")
     public ResponseEntity<?> notifyByEventId(@PathVariable long eventId){
         if (eventService.isValid(eventId)){
-            notifyWebHooks(eventService.findOne(eventId));
+            notificationService.notifyWebHooks(eventService.findOne(eventId));
             return ResponseEntity.ok().body(NOTIFY_EVENT_SUCCESS);
         }
         return ResponseEntity.status(422).body(NOTIFY_EVENT_ERROR);
@@ -57,48 +60,37 @@ public class NotificationController {
     }
     @PostMapping
     public ResponseEntity<?> registerCustomer(@RequestBody Customer customer){
-        Customer c = notificationService.save(customer);
-        ResponseEntity<String> response = ResponseEntity.badRequest().body(NOTIFICATION_ERROR);
-        if(c != null){
-            response = ResponseEntity.ok().body(NOTIFICATION_SUCCESS + c.toString());
+        if(customer != null){
+            if (!customer.getCustomerAPIUrl().endsWith("/") || !customer.getCustomerAPIUrl()
+                    .matches(VALID_URL_REGEX)){
+                return ResponseEntity.status(422).body(CUSTOMER_URL_ERROR);
+            }
+            if (customer.getEndPoint().endsWith("/") || customer.getEndPoint().startsWith("/")){
+                return ResponseEntity.status(422).body(CUSTOMER_ENDPOINT_ERROR);
+            }
+            Customer c = notificationService.save(customer);
+            return ResponseEntity.ok().body(CUSTOMER_SUCCESS + c.toString());
         }
 
-        return response;
+        return ResponseEntity.badRequest().body(CUSTOMER_ERROR);
     }
 
 
     @PutMapping
     public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
-        Customer c = notificationService.save(customer);
-        ResponseEntity<String> response = ResponseEntity.badRequest().body(NOTIFICATION_ERROR);
-        if(c != null) {
-            response = ResponseEntity.ok().body(NOTIFICATION_SUCCESS + c.toString());
-        }
-        return response;
-    }
-
-    public void notifyWebHooks(Event event){
-        //TODO Get WebHooks from database;
-        Map<String,String> webHooks = new HashMap<>();
-        webHooks.put("http://localhost:8080/ksquare-chat/", "notify");
-        webHooks.put("http://localhost:8080/ksquare-chat2/", "notify");
-        webHooks.forEach((baseUrl, endpoint) -> notifyWebHookEndpoint(baseUrl, endpoint, event));
-    }
-
-    private void notifyWebHookEndpoint(String baseUrl, String endpoint, Event event){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseUrl)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .build();
-
-        WebHookService webHookService = retrofit.create(WebHookService.class);
-        try {
-            if(!webHookService.sendNotification(endpoint, event).execute().isSuccessful()){
-                Logger.getGlobal().warning("Failed notifying API with URL" + baseUrl);
+        if(customer != null){
+            if (customer.getCustomerAPIUrl().endsWith("/") && !customer.getCustomerAPIUrl()
+                    .matches(VALID_URL_REGEX)){
+                return ResponseEntity.status(422).body(CUSTOMER_URL_ERROR);
+            }else if (customer.getEndPoint().endsWith("/") || customer.getEndPoint().startsWith("/")){
+                return ResponseEntity.status(422).body(CUSTOMER_ENDPOINT_ERROR);
+            }else {
+                Customer c = notificationService.update(customer);
+                return ResponseEntity.ok().body(CUSTOMER_SUCCESS + c.toString());
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Logger.getGlobal().warning("Failed notifying API with URL" + baseUrl);
         }
+        return ResponseEntity.badRequest().body(CUSTOMER_ERROR);
     }
+
+
 }

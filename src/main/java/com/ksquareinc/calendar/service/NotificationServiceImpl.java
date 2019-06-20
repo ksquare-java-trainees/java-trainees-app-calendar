@@ -2,11 +2,19 @@ package com.ksquareinc.calendar.service;
 
 import com.ksquareinc.calendar.dao.NotificationDao;
 import com.ksquareinc.calendar.model.Customer;
+import com.ksquareinc.calendar.model.Event;
+import com.ksquareinc.calendar.service.retrofit.WebHookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,4 +64,29 @@ public class NotificationServiceImpl implements NotificationService{
     public void makePush(long id) {
         notificationDao.makePush(id);
     }
+
+    public void notifyWebHooks(Event event){
+        List<Customer> webHooks = findAll();
+        for (Customer webHook: webHooks){
+            notifyWebHookEndpoint(webHook.getCustomerAPIUrl(), webHook.getEndPoint(), event);
+        }
+    }
+
+    private void notifyWebHookEndpoint(String baseUrl, String endpoint, Event event){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
+
+        WebHookService webHookService = retrofit.create(WebHookService.class);
+        try {
+            if(!webHookService.sendNotification(endpoint, event).execute().isSuccessful()){
+                Logger.getGlobal().warning("Failed notifying API with URL" + baseUrl);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.getGlobal().warning("Failed notifying API with URL" + baseUrl);
+        }
+    }
+
 }

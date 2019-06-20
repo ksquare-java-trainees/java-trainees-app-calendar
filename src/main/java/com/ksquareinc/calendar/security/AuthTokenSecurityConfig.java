@@ -28,6 +28,8 @@ public class AuthTokenSecurityConfig extends WebSecurityConfigurerAdapter {
     public static String tokenKey;
 
     private final String INVALID_TOKEN_MSG = "Your token is not valid or has expired. Please try again.";
+
+
     private String[] SEC_WHITELIST = new String[]{"/", "/favicon.ico", "/csrf", "/v2/api-docs", "/swagger-resources/configuration/ui",
             "/configuration/ui", "/swagger-resources", "/swagger-resources/configuration/security",
             "/configuration/security", "/swagger-ui.html", "/webjars/**"};

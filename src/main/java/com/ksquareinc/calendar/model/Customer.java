@@ -18,6 +18,8 @@ public class Customer implements Serializable {
 
     private String companyName;
 
+    private String customerAPIUrl;
+
     private String endPoint;
 
     public Long getId() {
@@ -44,14 +46,24 @@ public class Customer implements Serializable {
         this.endPoint = endPoint;
     }
 
+    public String getCustomerAPIUrl() {
+        return customerAPIUrl;
+    }
+
+    public void setCustomerAPIUrl(String customerAPIUrl) {
+        this.customerAPIUrl = customerAPIUrl;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
                 "id=" + id +
                 ", companyName='" + companyName + '\'' +
+                ", customerAPIUrl='" + customerAPIUrl + '\'' +
                 ", endPoint='" + endPoint + '\'' +
                 '}';
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -59,12 +71,13 @@ public class Customer implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
         return id.equals(customer.id) &&
-                companyName.equals(customer.companyName) &&
-                endPoint.equals(customer.endPoint);
+                Objects.equals(companyName, customer.companyName) &&
+                Objects.equals(customerAPIUrl, customer.customerAPIUrl) &&
+                Objects.equals(endPoint, customer.endPoint);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, companyName, endPoint);
+        return Objects.hash(id, companyName, customerAPIUrl, endPoint);
     }
 }
