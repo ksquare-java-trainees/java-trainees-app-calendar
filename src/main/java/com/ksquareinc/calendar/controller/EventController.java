@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/event")
+@RequestMapping("/api/event")
 @PropertySource("classpath:sec.properties")
 public class EventController {
 
@@ -43,7 +43,7 @@ public class EventController {
                 Event newEvent = eventService.save(event);
                 return ResponseEntity.ok().body(EVENT_SAVE_MSG + newEvent.toString());
             }else{
-                return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
+                    return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
             }
         }
         return ResponseEntity.badRequest().body(EVENT_CREATOR_ERROR);

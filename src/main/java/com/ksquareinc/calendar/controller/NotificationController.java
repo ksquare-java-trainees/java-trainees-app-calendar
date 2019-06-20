@@ -1,40 +1,52 @@
 package com.ksquareinc.calendar.controller;
 
+import com.ksquareinc.calendar.model.Customer;
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.service.EventService;
+import com.ksquareinc.calendar.service.NotificationService;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import org.omg.CORBA.BAD_CONTEXT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/notify")
+@RequestMapping("/api/notification")
 public class NotificationController {
 
+    private final String BAD_REQUEST = "The information given are not acceptable ";
+    private final String OK = "Your operation was successful ";
+
     @Autowired
-    EventService eventService;
+    NotificationService notificationService;
 
-    private static final String NOTIFY_SUCCESS = "Placeholder for notification response object.";
-    private static final String EVENT_ERROR = "There is no active Event with that ID, Please check your input";
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = OK),
+            @ApiResponse(code = 400, message = BAD_REQUEST)
+    })
 
-    @PostMapping("/{eventId}")
-    public ResponseEntity<?> notifyByEventId(@PathVariable long eventId){
-        if (eventService.isValid(eventId)){
-            //TODO send notification rest request to chat service
-            return ResponseEntity.ok().body(NOTIFY_SUCCESS);
+    @PostMapping
+    public ResponseEntity<?> registerCustomer(@RequestBody Customer customer){
+        Customer c = notificationService.save(customer);
+        ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
+        if(c != null){
+            response = ResponseEntity.ok().body(OK + c.toString());
         }
 
-        return ResponseEntity.badRequest().body(EVENT_ERROR);
+        return response;
     }
 
 
-    @PostMapping
-    public ResponseEntity<?> notifyByEventId(@RequestBody Event event){
-        if (event == null || event.getId() == null){
-            return ResponseEntity.badRequest().body(EVENT_ERROR);
-        }else{
-            return notifyByEventId(event.getId());
+    @PutMapping
+    public ResponseEntity<?> updateCustomer(@RequestBody Customer customer){
+        Customer c = notificationService.save(customer);
+        ResponseEntity<String> response = ResponseEntity.badRequest().body(BAD_REQUEST);
+        if(c != null){
+            response = ResponseEntity.ok().body(OK + c.toString());
         }
 
+        return response;
     }
 
 
