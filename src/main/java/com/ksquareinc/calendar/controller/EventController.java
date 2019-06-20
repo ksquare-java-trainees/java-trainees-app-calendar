@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/event")
+@RequestMapping("/event")
 @PropertySource("classpath:sec.properties")
 public class EventController {
 

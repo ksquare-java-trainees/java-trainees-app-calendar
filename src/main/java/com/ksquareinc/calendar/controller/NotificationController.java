@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 @RestController
-@RequestMapping("/api/notification")
+@RequestMapping("/notification")
 public class NotificationController {
 
     @Autowired
