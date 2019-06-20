@@ -2,6 +2,7 @@ package com.ksquareinc.calendar.controller;
 
 import com.ksquareinc.calendar.model.Event;
 import com.ksquareinc.calendar.service.EventService;
+import com.ksquareinc.calendar.service.NotificationService;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,10 +28,13 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = EVENT_SAVE_MSG),
-            @ApiResponse(code = 400, message = EVENT_CREATOR_ERROR),
-            @ApiResponse(code = 422, message = EVENT_GUEST_ERROR)
+            @ApiResponse(code = 422, message = EVENT_GUEST_ERROR),
+            @ApiResponse(code = 400, message = EVENT_CREATOR_ERROR)
     })
     @PostMapping
     public ResponseEntity<?> save(@RequestHeader(value = "${tokenName}") String token, @RequestBody Event event){
@@ -37,9 +42,10 @@ public class EventController {
             event = eventService.getWithValidSsoGuests(token, event);
             if (event != null){
                 Event newEvent = eventService.save(event);
+                notificationService.notifyWebHooks(newEvent);
                 return ResponseEntity.ok().body(EVENT_SAVE_MSG + newEvent.toString());
             }else{
-                    return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
+                return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
             }
         }
         return ResponseEntity.badRequest().body(EVENT_CREATOR_ERROR);
@@ -67,6 +73,7 @@ public class EventController {
             event = eventService.getWithValidSsoGuests(token, event);
             if (event != null){
                 eventService.update(event);
+                notificationService.notifyWebHooks(event);
                 return ResponseEntity.ok().body(EVENT_UPDATE_MSG + event.toString());
             }else{
                 return ResponseEntity.status(422).body(EVENT_GUEST_ERROR);
@@ -115,17 +122,19 @@ public class EventController {
 
     @GetMapping("/byDay")
     public ResponseEntity<List<Event>> findAllByDay(@RequestParam(value = "day")
-                                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                            LocalDateTime day) {
-        List<Event> allByDay = eventService.findAllByDay(day);
+                                                    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                            LocalDate day) {
+        LocalDateTime dateTime = day.atStartOfDay();
+        List<Event> allByDay = eventService.findAllByDay(dateTime);
         return ResponseEntity.ok().body(allByDay);
     }
 
     @GetMapping("/byWeek/byDay")
     public ResponseEntity<List<Event>> findAllByWeek(@RequestParam(value = "weekday")
-                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                             LocalDateTime weekDay) {
-        List<Event> allByWeek = eventService.findAllByWeek(weekDay);
+                                                     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                                 LocalDate weekDay) {
+        LocalDateTime dateTime = weekDay.atStartOfDay();
+        List<Event> allByWeek = eventService.findAllByWeek(dateTime);
         return ResponseEntity.ok().body(allByWeek);
     }
 
@@ -138,9 +147,10 @@ public class EventController {
 
     @GetMapping("/byMonth/byDay")
     public ResponseEntity<List<Event>> findAllByMonth(@RequestParam(value = "monthday")
-                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-                                                              LocalDateTime monthDay) {
-        List<Event> allByMonth = eventService.findAllByMonth(monthDay);
+                                                      @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                              LocalDate monthDay) {
+        LocalDateTime dateTime = monthDay.atStartOfDay();
+        List<Event> allByMonth = eventService.findAllByMonth(dateTime);
         return ResponseEntity.ok().body(allByMonth);
     }
 

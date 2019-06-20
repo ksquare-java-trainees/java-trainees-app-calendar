@@ -48,7 +48,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
                         .parameterType("header")
                         .required(true)
                         .hidden(true)
-                        .defaultValue("JWT...")
+                        .defaultValue("Json web token")
                         .build()
                 ))
                 .select()
